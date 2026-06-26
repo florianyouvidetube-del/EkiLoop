@@ -1021,7 +1021,7 @@ document.addEventListener('DOMContentLoaded', async function() {
   }
 
   // ---- boot communauté ----
-  function commTick() { try { ensureMobileCSS(); tagMobileTargets(); tagToolbarButtons(); placeHeaderButtons(); placeProjectsButton(); placeCoinShop(); placeAiMenu(); placeBurger(); wireParamsGear(); attachInstrumentGuard(); attachGridWheelFix(); tagDnD(); studioTimerCheck(); suppressAppTutorial(); tickerEnsure(); tutorialEnsure(); applySkins(); } catch (e) {} }
+  function commTick() { try { ensureMobileCSS(); tagMobileTargets(); tagToolbarButtons(); placeHeaderButtons(); placeProjectsButton(); placeCoinShop(); placeAiMenu(); placeBurger(); wireParamsGear(); attachInstrumentGuard(); attachGridWheelFix(); ensureHScroll(); scheduleResponsive(); wireResponsiveResize(); tagDnD(); studioTimerCheck(); suppressAppTutorial(); tickerEnsure(); tutorialEnsure(); applySkins(); } catch (e) {} }
   function commBoot() {
     initDnD();
     try { var mo = new MutationObserver(function () { clearTimeout(window.__ekiCommT); window.__ekiCommT = setTimeout(commTick, 180); }); mo.observe(document.body, { childList: true, subtree: true }); } catch (e) {}
@@ -1440,7 +1440,7 @@ document.addEventListener('DOMContentLoaded', async function() {
   function buildShopBtn() { var b = document.createElement("button"); b.className = "__eki_shop"; b.textContent = "\uD83D\uDED2 Boutique"; b.style.cssText = "display:inline-flex;align-items:center;gap:6px;padding:9px 16px;border-radius:12px;border:1px solid #FFB02266;background:#FF772318;color:" + C.txt + ";font:600 13px Roboto,system-ui,sans-serif;cursor:pointer;margin-right:8px;"; b.onclick = function () { openShop(); }; return b; }
   function isBoosted(t) { return t && t.boosted_until && new Date(t.boosted_until).getTime() > Date.now(); }
   var _coinTs = 0;
-  function refreshCoinPill() { var el = document.getElementById("__eki_coinval"); if (!el) return; if (isAdmin()) { el.textContent = "\u221E"; return; } cWallet(function (co) { var e2 = document.getElementById("__eki_coinval"); if (e2) e2.textContent = "" + co; }); }
+  function refreshCoinPill() { var el = document.getElementById("__eki_coinval"); if (!el) return; if (isAdmin()) { el.textContent = "\u221E"; if (window.__ekiFit) window.__ekiFit(); return; } cWallet(function (co) { var e2 = document.getElementById("__eki_coinval"); if (e2) e2.textContent = "" + co; if (window.__ekiFit) window.__ekiFit(); }); }
   window.__ekiRefreshCoins = refreshCoinPill;
   function placeCoinShop() {
     if (!window.__ekiAuthed || !window.__ekiAuthed()) { var ex = document.getElementById("__eki_coinbar"); if (ex) ex.remove(); return; }
@@ -1713,24 +1713,38 @@ document.addEventListener('DOMContentLoaded', async function() {
     if (document.getElementById("__eki_mobilecss")) return;
     var st = document.createElement("style"); st.id = "__eki_mobilecss";
     st.textContent =
-      "#__eki_paramgear{display:none;}" +
-      // --- petit écran d'ordinateur : header compact, boutons même gabarit, marges réduites ---
-      "@media (max-width:1300px){" +
-      ".__eki_studiohdr{padding:12px 16px!important;}" +
-      ".__eki_studiohdr button{padding:8px 12px!important;font-size:12.5px!important;border-radius:11px!important;}" +
-      "}" +
-      // --- on retire d'abord Populaire, puis Surprends-moi (dans le burger) ---
-      "@media (max-width:1200px){.__eki_btn_populaire{display:none!important;}#__eki_burger{display:inline-flex!important;}}" +
-      "@media (max-width:1100px){.__eki_btn_surprise{display:none!important;}}" +
-      // --- Sauvegarder en icône seule ---
-      "@media (max-width:1000px){.__eki_studiohdr .__eki_btn_save{font-size:0!important;padding:8px 10px!important;}}" +
-      // --- Communauté / Publier / S'inscrire en icône seule ---
-      "@media (max-width:900px){.__eki_feed .__bl,.__eki_pub .__bl,.__eki_reg .__bl{display:none!important;}.__eki_feed,.__eki_pub,.__eki_reg{padding:8px 10px!important;}}" +
-      "@media (max-width:820px){.__eki_studiohdr .__eki_btn_projets{font-size:0!important;padding:8px 10px!important;}}" +
-      // --- barre du bas : tempo + accords passent dans la roue crantée ---
+      "#__eki_paramgear{display:none;}#__eki_hscroll{display:none;}" +
+      // base : empêche le retour à la ligne -> le dépassement devient mesurable
+      ".__eki_studiohdr button{white-space:nowrap!important;}" +
+      ".__eki_studiohdr>div{flex-shrink:0!important;}" +
+      ".__eki_studiohdr .__eki_btn_surprise,.__eki_studiohdr #__eki_aitoggle{font-size:13px!important;padding:9px 15px!important;}" +
+      // étape compacte : même gabarit, police réduite, marges réduites
+      ".__eki_studiohdr.eki-hc{padding:12px 16px!important;}" +
+      ".__eki_studiohdr.eki-hc button{padding:8px 11px!important;font-size:12px!important;border-radius:10px!important;}" +
+      // Populaires -> icône seule
+      ".__eki_studiohdr.eki-h-pop .__eki_btn_populaire{font-size:0!important;padding:8px 10px!important;}" +
+      ".__eki_studiohdr.eki-h-pop .__eki_btn_populaire::before{content:'\\1F3B5';font-size:15px;}" +
+      // Surprends-moi -> icône seule
+      ".__eki_studiohdr.eki-h-surp .__eki_btn_surprise{font-size:0!important;padding:8px 10px!important;}" +
+      ".__eki_studiohdr.eki-h-surp .__eki_btn_surprise::before{content:'\\2728';font-size:15px;}" +
+      // IA -> icône seule
+      ".__eki_studiohdr.eki-h-ia #__eki_aitoggle{font-size:0!important;padding:8px 10px!important;}" +
+      ".__eki_studiohdr.eki-h-ia #__eki_aitoggle::before{content:'\\2728';font-size:15px;}" +
+      // Sauvegarder -> icône seule (SVG conservé)
+      ".__eki_studiohdr.eki-h-save .__eki_btn_save{font-size:0!important;padding:8px 10px!important;}" +
+      // Communauté / Publier / S'inscrire -> icône seule
+      ".__eki_studiohdr.eki-h-comm .__eki_feed .__bl,.__eki_studiohdr.eki-h-comm .__eki_pub .__bl,.__eki_studiohdr.eki-h-comm .__eki_reg .__bl{display:none!important;}" +
+      // Projets -> icône seule
+      ".__eki_studiohdr.eki-h-proj .__eki_btn_projets{font-size:0!important;padding:8px 10px!important;}" +
+      ".__eki_studiohdr.eki-h-title .__eki_title{display:none!important;}" +
+      ".__eki_studiohdr.eki-h-export .__eki_btn_export{font-size:0!important;padding:8px 10px!important;}" +
+      // dernier recours : Populaires / Surprends masqués (dans le burger)
+      ".__eki_studiohdr.eki-h-pophide .__eki_btn_populaire{display:none!important;}" +
+      ".__eki_studiohdr.eki-h-surphide .__eki_btn_surprise{display:none!important;}" +
+      // barre du bas : tempo + accords passent dans la roue crantée
       "@media (max-width:980px){.__eki_tempo,.__eki_chords{display:none!important;}body.eki-params-open .__eki_tempo,body.eki-params-open .__eki_chords{display:flex!important;}#__eki_paramgear{display:inline-flex!important;}.__eki_transport{padding:10px 14px!important;}}" +
-      // --- mobile ---
-      "@media (max-width:719px){.__eki_studiohdr{padding:11px 14px!important;}.__eki_logo{font-size:20px!important;}.__eki_transport{padding:10px 12px!important;gap:14px!important;}[data-grid-scroll]{padding-left:10px!important;padding-right:10px!important;padding-top:6px!important;}[data-rc]{height:34px!important;}}" +
+      // mobile
+      "@media (max-width:719px){.__eki_studiohdr{padding:11px 14px!important;}.__eki_logo{font-size:20px!important;}.__eki_transport{padding:10px 12px!important;gap:12px!important;}[data-grid-scroll]{padding-left:10px!important;padding-right:10px!important;padding-top:6px!important;}[data-rc]{height:34px!important;}#__eki_burger{display:inline-flex!important;}}" +
       "@media (max-width:479px){[data-rc]{height:30px!important;}.__eki_studiohdr{padding:9px 11px!important;}.__eki_logo{font-size:18px!important;}}";
     document.head.appendChild(st);
   }
@@ -1743,7 +1757,7 @@ document.addEventListener('DOMContentLoaded', async function() {
       bar.classList.add("__eki_transport");
       var kids = bar.children;
       for (var i = 0; i < kids.length; i++) {
-        var el = kids[i]; if (el.id === "__eki_paramgear") continue;
+        var el = kids[i]; if (el.id === "__eki_paramgear" || el.id === "__eki_hscroll") continue;
         if (el.classList.contains("__eki_tempo") || el.classList.contains("__eki_chords")) continue;
         var cs = getComputedStyle(el);
         if (cs.minWidth === "200px" && cs.maxWidth === "320px") el.classList.add("__eki_tempo");
@@ -1756,11 +1770,11 @@ document.addEventListener('DOMContentLoaded', async function() {
       if (hc.position === "fixed" && hc.zIndex === "25") {
         h.classList.add("__eki_studiohdr");
         for (var k = 0; k < h.children.length; k++) { var ch = h.children[k]; if (/Rubik Glitch/.test(getComputedStyle(ch).fontFamily)) ch.classList.add("__eki_logo"); }
+        if (h.children[0]) { var lg = h.children[0].children; for (var x = 0; x < lg.length; x++) { if (getComputedStyle(lg[x]).maxWidth === "180px") lg[x].classList.add("__eki_title"); } }
       }
     }
   }
 
-  // ---------- étiquette les boutons de la barre du haut (priorités responsive) ----------
   function tagToolbarButtons() {
     var hdr = document.querySelector(".__eki_studiohdr"); if (!hdr) return;
     var bs = hdr.getElementsByTagName("button");
@@ -1770,10 +1784,30 @@ document.addEventListener('DOMContentLoaded', async function() {
       else if (/Surprends/.test(tx)) b.classList.add("__eki_btn_surprise");
       else if ((/Sauvegarder/.test(tx) || /Sauvegarder/.test(ti))) b.classList.add("__eki_btn_save");
       else if (/Projets/.test(tx)) b.classList.add("__eki_btn_projets");
+      else if (/Exporter/.test(tx)) b.classList.add("__eki_btn_export");
     }
   }
 
-  // ---------- réutilise la roue crantée existante (timbre) pour tempo+accords ----------
+  // ---------- gestion du dépassement de la barre du haut (réactif, à la taille réelle) ----------
+  var HDR_STEPS = ["eki-hc", "eki-h-pop", "eki-h-surp", "eki-h-ia", "eki-h-save", "eki-h-comm", "eki-h-proj", "eki-h-pophide", "eki-h-surphide", "eki-h-title", "eki-h-export"];
+  function manageHeaderOverflow() {
+    var hdr = document.querySelector(".__eki_studiohdr"); if (!hdr) return;
+    for (var i = 0; i < HDR_STEPS.length; i++) hdr.classList.remove(HDR_STEPS[i]);
+    if (hdr.scrollWidth <= hdr.clientWidth + 2) return;
+    for (var j = 0; j < HDR_STEPS.length; j++) {
+      hdr.classList.add(HDR_STEPS[j]);
+      if (hdr.scrollWidth <= hdr.clientWidth + 2) return;
+    }
+  }
+  var _hdrRaf = null, _hdrLate = null;
+  function scheduleResponsive() {
+    if (!_hdrRaf) _hdrRaf = requestAnimationFrame(function () { _hdrRaf = null; manageHeaderOverflow(); updateHScroll(); });
+    clearTimeout(_hdrLate); _hdrLate = setTimeout(function () { manageHeaderOverflow(); updateHScroll(); }, 400);
+  }
+  window.__ekiFit = scheduleResponsive;
+  function wireResponsiveResize() { if (window.__ekiResizeWired) return; window.__ekiResizeWired = true; window.addEventListener("resize", scheduleResponsive); }
+
+  // ---------- roue crantée existante (timbre) réutilisée pour tempo+accords ----------
   function wireParamsGear() {
     var c = window.__ekiComponent; if (!c || !c.state || c.state.screen !== "studio") return;
     var bar = findTransportBar(); if (!bar) return;
@@ -1790,6 +1824,38 @@ document.addEventListener('DOMContentLoaded', async function() {
       fb.onclick = function () { document.body.classList.toggle("eki-params-open"); };
       bar.appendChild(fb);
     }
+  }
+
+  // ---------- barre de défilement horizontale du séquenceur ----------
+  function ensureHScroll() {
+    var c = window.__ekiComponent; if (!c || !c.state || c.state.screen !== "studio") return;
+    var bar = findTransportBar(), grid = document.querySelector("[data-grid-scroll]"); if (!bar || !grid) return;
+    var wrap = document.getElementById("__eki_hscroll");
+    if (!wrap) {
+      wrap = document.createElement("div"); wrap.id = "__eki_hscroll";
+      wrap.style.cssText = "flex:1;min-width:90px;height:14px;position:relative;align-self:center;";
+      var tr = document.createElement("div"); tr.id = "__eki_hscroll_tr"; tr.style.cssText = "position:absolute;left:0;right:0;top:5px;height:5px;border-radius:3px;background:#3A1A42;";
+      var th = document.createElement("div"); th.id = "__eki_hscroll_th"; th.style.cssText = "position:absolute;top:3px;height:8px;border-radius:4px;background:linear-gradient(90deg,#FF7723,#BE09FF);cursor:grab;left:0;width:30px;box-shadow:0 0 8px #BE09FF55;";
+      wrap.appendChild(tr); wrap.appendChild(th); bar.appendChild(wrap);
+      var drag = false, sx = 0, sl = 0;
+      th.addEventListener("pointerdown", function (e) { drag = true; sx = e.clientX; var g = document.querySelector("[data-grid-scroll]"); sl = g ? g.scrollLeft : 0; try { th.setPointerCapture(e.pointerId); } catch (x) {} th.style.cursor = "grabbing"; e.preventDefault(); });
+      th.addEventListener("pointermove", function (e) {
+        if (!drag) return; var g = document.querySelector("[data-grid-scroll]"); var trk = document.getElementById("__eki_hscroll_tr"); if (!g || !trk) return;
+        var maxThumb = trk.clientWidth - th.clientWidth, maxScroll = g.scrollWidth - g.clientWidth; if (maxThumb <= 0) return;
+        g.scrollLeft = sl + ((e.clientX - sx) / maxThumb) * maxScroll;
+      });
+      th.addEventListener("pointerup", function () { drag = false; th.style.cursor = "grab"; });
+      grid.addEventListener("scroll", function () { updateHScroll(); });
+    }
+    updateHScroll();
+  }
+  function updateHScroll() {
+    var wrap = document.getElementById("__eki_hscroll"); if (!wrap) return;
+    var g = document.querySelector("[data-grid-scroll]"), tr = document.getElementById("__eki_hscroll_tr"), th = document.getElementById("__eki_hscroll_th"); if (!g || !tr || !th) return;
+    var overflow = g.scrollWidth > g.clientWidth + 2;
+    wrap.style.display = overflow ? "block" : "none"; if (!overflow) return;
+    var trackW = tr.clientWidth, thW = Math.max(28, trackW * (g.clientWidth / g.scrollWidth)); th.style.width = thW + "px";
+    var maxScroll = g.scrollWidth - g.clientWidth, maxThumb = trackW - thW; th.style.left = (maxScroll > 0 ? (g.scrollLeft / maxScroll) * maxThumb : 0) + "px";
   }
 
   // ---------- avertissement avant de perdre les notes en changeant de famille d'instrument ----------
