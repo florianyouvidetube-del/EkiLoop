@@ -754,11 +754,26 @@ document.addEventListener('DOMContentLoaded', async function() {
     return b;
   }
   function openFeed() {
-    var card = modalShell("\uD83C\uDF10 Flux communautaire", 600);
-    showSectionIntro("feed", "Bienvenue dans la Communauté", ["Écoute les morceaux des autres : le bouton ▶ lance juste le son.", "« 🎹 Tester » ouvre le morceau dans le séquenceur pour le modifier.", "Like, commente et abonne-toi — tu fais gagner des pièces aux créateurs."]);
-    var tabs = document.createElement("div"); tabs.style.cssText = "display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;";
+    if (!window.__ekiAuthed || !window.__ekiAuthed()) {
+      var exg = document.getElementById("__eki_feedpage"); if (exg) exg.remove();
+    }
+    var ex = document.getElementById("__eki_feedpage"); if (ex) ex.remove();
+    var ov = document.createElement("div"); ov.id = "__eki_feedpage";
+    ov.style.cssText = "position:fixed;inset:0;z-index:99000;background:#0b0013;color:" + C.txt + ";display:flex;flex-direction:column;font-family:Roboto;";
+    var hd = document.createElement("div"); hd.style.cssText = "display:flex;align-items:center;gap:14px;padding:15px 26px;border-bottom:1px solid " + C.line + ";background:#11001b;flex:none;flex-wrap:wrap;";
+    var back = document.createElement("button"); back.innerHTML = "\u2039 Retour"; back.style.cssText = "padding:8px 14px;border-radius:10px;border:1px solid " + C.line + ";background:" + C.bg2 + ";color:" + C.txt + ";font:600 13px Roboto;cursor:pointer;";
+    back.onclick = function () { ov.remove(); };
+    var title = document.createElement("div"); title.textContent = "Communaut\u00E9"; title.style.cssText = "font-family:'Rubik Glitch',cursive;font-size:24px;background:linear-gradient(135deg,#FF7723,#BE09FF);-webkit-background-clip:text;background-clip:text;color:transparent;";
+    var pub = document.createElement("button"); pub.innerHTML = "\uD83D\uDCE2 Publier"; pub.style.cssText = "margin-left:auto;padding:9px 17px;border-radius:11px;border:none;background:linear-gradient(135deg,#FF7723,#BE09FF);color:#fff;font:700 13px Roboto;cursor:pointer;";
+    pub.onclick = function () { if (typeof openPublishPanel === "function") openPublishPanel(); };
+    hd.appendChild(back); hd.appendChild(title); hd.appendChild(pub); ov.appendChild(hd);
+    var scroll = document.createElement("div"); scroll.style.cssText = "flex:1;overflow:auto;padding:22px 26px 48px;";
+    var inner = document.createElement("div"); inner.style.cssText = "max-width:780px;margin:0 auto;";
+    scroll.appendChild(inner); ov.appendChild(scroll); document.body.appendChild(ov);
+    showSectionIntro("feed", "Bienvenue dans la Communaut\u00E9", ["\u00C9coute les morceaux des autres : le bouton \u25B6 lance juste le son.", "\u00AB \uD83C\uDFB9 Tester \u00BB ouvre le morceau dans le s\u00E9quenceur pour le modifier.", "Like, commente et abonne-toi \u2014 tu fais gagner des pi\u00E8ces aux cr\u00E9ateurs."]);
+    var tabs = document.createElement("div"); tabs.style.cssText = "display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;";
     var list = document.createElement("div"); var cur = { v: "top" };
-    var defs = [["top", "\u2B50 Top likes"], ["recent", "\uD83D\uDD52 Récents"], ["mine", "\u2764\uFE0F Mes likes"]];
+    var defs = [["top", "\u2B50 Top likes"], ["recent", "\uD83D\uDD52 R\u00E9cents"], ["mine", "\u2764\uFE0F Mes likes"]];
     var els = [];
     defs.forEach(function (d) {
       var t = document.createElement("button"); t.textContent = d[1];
@@ -766,15 +781,15 @@ document.addEventListener('DOMContentLoaded', async function() {
       t.__paint(); t.onclick = function () { cur.v = d[0]; els.forEach(function (e) { e.__paint(); }); load(); };
       els.push(t); tabs.appendChild(t);
     });
-    card.appendChild(tabs); card.appendChild(list);
+    inner.appendChild(tabs); inner.appendChild(list);
     function load() {
-      list.innerHTML = ""; var info = document.createElement("div"); info.style.cssText = "color:" + C.sub + ";font-size:13px;padding:8px;"; info.textContent = "Chargement…"; list.appendChild(info);
-      if (!configured()) { info.textContent = "Communauté indisponible (Supabase non configuré)."; return; }
+      list.innerHTML = ""; var info = document.createElement("div"); info.style.cssText = "color:" + C.sub + ";font-size:13px;padding:8px;"; info.textContent = "Chargement\u2026"; list.appendChild(info);
+      if (!configured()) { info.textContent = "Communaut\u00E9 indisponible (Supabase non configur\u00E9)."; return; }
       cMyLikes(function (myLikes) {
         cFeed(cur.v, function (rows, err) {
           list.innerHTML = "";
-          if (err) { info.textContent = "Crée d'abord les tables SQL de la communauté dans Supabase, puis réessaie."; info.style.color = C.orange; list.appendChild(info); return; }
-          if (!rows.length) { info.textContent = cur.v === "mine" ? "Tu n'as encore liké aucun morceau." : "Aucun morceau publié. Sois le premier !"; list.appendChild(info); return; }
+          if (err) { info.textContent = "Cr\u00E9e d'abord les tables SQL de la communaut\u00E9 dans Supabase, puis r\u00E9essaie."; info.style.color = C.orange; list.appendChild(info); return; }
+          if (!rows.length) { info.textContent = cur.v === "mine" ? "Tu n'as encore lik\u00E9 aucun morceau." : "Aucun morceau publi\u00E9. Sois le premier !"; list.appendChild(info); return; }
           rows.sort(function (a, b) { return (isBoosted(b) ? 1 : 0) - (isBoosted(a) ? 1 : 0); });
           rows.forEach(function (t) { list.appendChild(feedCard(t, myLikes[t.id] || 0)); });
         });
@@ -1026,7 +1041,7 @@ document.addEventListener('DOMContentLoaded', async function() {
   }
 
   // ---- boot communauté ----
-  function commTick() { try { ensureMobileCSS(); tagMobileTargets(); tagToolbarButtons(); placeHeaderButtons(); placeProjectsButton(); placeCoinShop(); placeAiMenu(); placeBurger(); placeMessagesBtn(); placeDailyIcon(); placePremiumTracks(); maybeAutoDaily(); if (typeof placeSidebar === "function") placeSidebar(); if (typeof hideTopProjets === "function") hideTopProjets(); if (typeof applyCosmetics === "function") applyCosmetics(); wireParamsGear(); attachInstrumentGuard(); attachGridWheelFix(); ensureHScroll(); scheduleResponsive(); wireResponsiveResize(); tagDnD(); studioTimerCheck(); suppressAppTutorial(); tickerEnsure(); tutorialEnsure(); applySkins(); } catch (e) {} }
+  function commTick() { try { ensureMobileCSS(); tagMobileTargets(); tagToolbarButtons(); placeHeaderButtons(); placeProjectsButton(); placeCoinShop(); placeAiMenu(); placeBurger(); placeMessagesBtn(); placePremiumTracks(); if (typeof placeSidebar === "function") placeSidebar(); if (typeof hideTopProjets === "function") hideTopProjets(); if (typeof applyCosmetics === "function") applyCosmetics(); wireParamsGear(); attachInstrumentGuard(); attachGridWheelFix(); ensureHScroll(); scheduleResponsive(); wireResponsiveResize(); tagDnD(); studioTimerCheck(); suppressAppTutorial(); tickerEnsure(); tutorialEnsure(); applySkins(); } catch (e) {} }
   function commBoot() {
     initDnD();
     try { var mo = new MutationObserver(function () { clearTimeout(window.__ekiCommT); window.__ekiCommT = setTimeout(commTick, 180); }); mo.observe(document.body, { childList: true, subtree: true }); } catch (e) {}
@@ -1428,12 +1443,13 @@ document.addEventListener('DOMContentLoaded', async function() {
         if (!led.length) { info.textContent = "Aucun revenu pour l'instant. Publie et fais écouter tes morceaux !"; body.appendChild(info); return; }
         var inc = { play: 0, like: 0, minute: 0 }, spend = 0;
         led.forEach(function (e) { if (e.amount > 0) inc[e.source] = (inc[e.source] || 0) + e.amount; else spend += (-e.amount); });
-        var sumInc = inc.play + inc.like + inc.minute;
+        var sumInc = inc.play + inc.like + inc.minute + (inc.daily || 0) + (inc.lootbox || 0);
         var head = document.createElement("div"); head.style.cssText = "font:700 15px Roboto;color:" + C.txt + ";margin-bottom:12px;"; head.textContent = "Total gagné : " + sumInc + " \uD83D\uDCB0   ·   dépensé : " + spend; body.appendChild(head);
         function bar(lbl, val, col) { var max = Math.max(sumInc, 1); var row = document.createElement("div"); row.style.cssText = "margin-bottom:9px;"; var t = document.createElement("div"); t.textContent = lbl + " : " + val; t.style.cssText = "font-size:12px;color:" + C.sub + ";margin-bottom:3px;"; var tr = document.createElement("div"); tr.style.cssText = "height:10px;border-radius:6px;background:" + C.bg2 + ";overflow:hidden;"; var fl = document.createElement("div"); fl.style.cssText = "height:100%;width:" + (100 * val / max).toFixed(1) + "%;background:" + col + ";"; tr.appendChild(fl); row.appendChild(t); row.appendChild(tr); return row; }
         body.appendChild(bar("\u25B6 Écoutes", inc.play, C.orange));
         body.appendChild(bar("\uD83D\uDC4D Likes", inc.like, C.green));
         body.appendChild(bar("\u23F1 Temps d'écoute", inc.minute, C.pink));
+        body.appendChild(bar("🎁 Cadeaux & coffres", (inc.daily || 0) + (inc.lootbox || 0), "#FFB02E"));
         var ttl = document.createElement("div"); ttl.style.cssText = "font-weight:600;font-size:13px;color:" + C.txt + ";margin:16px 0 6px;"; ttl.textContent = "Évolution du solde"; body.appendChild(ttl);
         var chart = document.createElement("div"); chart.innerHTML = lineChartSVG(led); body.appendChild(chart);
       });
@@ -1473,7 +1489,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     var sub = document.createElement("div"); sub.style.cssText = "text-align:center;font-size:12px;color:" + C.sub + ";margin-bottom:18px;"; sub.textContent = "ton solde actuel"; card.appendChild(sub);
     cWallet(function (co) { bal.textContent = coinFmt(co) + " \uD83E\uDE99"; });
     var earn = document.createElement("div"); earn.style.cssText = "border:1px solid " + C.line + ";border-radius:12px;padding:14px;margin-bottom:12px;background:#1e0030;";
-    earn.innerHTML = "<div style='font-weight:700;color:" + C.txt + ";margin-bottom:8px'>Comment en gagner</div><div style='font-size:13px;color:" + C.sub + ";line-height:1.7'>\u25B6 +1 par écoute de tes morceaux<br>\uD83D\uDC4D +3 par like reçu<br>\u23F1 +1 toutes les 30 s d'écoute</div>"; card.appendChild(earn);
+    earn.innerHTML = "<div style='font-weight:700;color:" + C.txt + ";margin-bottom:8px'>Comment en gagner</div><div style='font-size:13px;color:" + C.sub + ";line-height:1.7'>\u25B6 +1 par écoute de tes morceaux<br>\uD83D\uDC4D +3 par like reçu<br>⏱ +1 toutes les 30 s d'écoute<br>🎁 Cadeaux quotidiens & coffres</div>"; card.appendChild(earn);
     var spend = document.createElement("div"); spend.style.cssText = "border:1px solid " + C.line + ";border-radius:12px;padding:14px;margin-bottom:16px;background:#1e0030;";
     spend.innerHTML = "<div style='font-weight:700;color:" + C.txt + ";margin-bottom:8px'>Où les dépenser</div><div style='font-size:13px;color:" + C.sub + ";line-height:1.7'>\uD83C\uDFA8 Skins de séquenceur & de notes<br>\uD83D\uDE80 Booster tes morceaux dans le flux</div>"; card.appendChild(spend);
     var b1 = mkBtn("\uD83D\uDED2 Ouvrir la boutique", "primary"); b1.onclick = function () { closeModal(); openShop(); }; card.appendChild(b1);
@@ -2271,7 +2287,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     { id: "bubbles", name: "Bulles", cost: -1, lootOnly: true, rarity: "rare", swatch: "radial-gradient(circle at 35% 30%,#bfe9ff,#1e88e5)",
       css: "@keyframes ekiBub{0%{transform:translateY(0);opacity:0}10%{opacity:.7}100%{transform:translateY(-104vh);opacity:0}}#__eki_skin_layer .ebb{position:absolute;bottom:-24px;border-radius:50%;background:radial-gradient(circle at 30% 30%,rgba(255,255,255,.85),rgba(70,170,255,.25));box-shadow:0 0 8px rgba(120,200,255,.5);animation:ekiBub linear infinite}",
       html: '<div class="ebb" style="left:8%;width:16px;height:16px;animation-duration:8s"></div><div class="ebb" style="left:22%;width:10px;height:10px;animation-duration:6s;animation-delay:1s"></div><div class="ebb" style="left:36%;width:22px;height:22px;animation-duration:10s;animation-delay:.5s"></div><div class="ebb" style="left:52%;width:12px;height:12px;animation-duration:7s;animation-delay:2s"></div><div class="ebb" style="left:66%;width:18px;height:18px;animation-duration:9s;animation-delay:.3s"></div><div class="ebb" style="left:80%;width:9px;height:9px;animation-duration:6.5s;animation-delay:1.6s"></div><div class="ebb" style="left:91%;width:14px;height:14px;animation-duration:8.5s;animation-delay:2.4s"></div>' },
-    { id: "lightning", name: "Foudre", cost: -1, lootOnly: true, rarity: "epic", swatch: "linear-gradient(180deg,#b4dcff,#3b2a6b)",
+    { id: "lightning", name: "Foudre", cost: -1, lootOnly: true, rarity: "epic", swatch: "linear-gradient(165deg,#fff7ae,#ffd400 45%,#3a1a00)",
       css: "@keyframes ekiLg{0%,93%,100%{opacity:0}94%,97%{opacity:1}}@keyframes ekiLg2{0%,88%,100%{opacity:0}90%,92%{opacity:.85}}#__eki_skin_layer .elg{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(180,220,255,.5),transparent 60%);animation:ekiLg 3.3s linear infinite}#__eki_skin_layer .elg2{position:absolute;inset:0;background:radial-gradient(ellipse at 28% 0%,rgba(200,180,255,.45),transparent 55%);animation:ekiLg2 5.1s linear infinite}",
       html: '<div class="elg"></div><div class="elg2"></div>' },
     { id: "vortex", name: "Vortex", cost: -1, lootOnly: true, rarity: "epic", swatch: "conic-gradient(from 0deg,#BE09FF,#FF7723,#00c8ff,#BE09FF)",
@@ -2303,6 +2319,10 @@ document.addEventListener('DOMContentLoaded', async function() {
     { id: "r_flame", name: "Anneau Enflamm\u00E9", cost: -1, lootOnly: true, rarity: "epic", swatch: "radial-gradient(circle,#ffd24a,#ff2d00)", css: "@keyframes ekiRingFlame{0%,100%{box-shadow:0 0 10px #ff6a00,0 0 18px #ff2d00aa;border-color:#ff8a00}50%{box-shadow:0 0 18px #ffb300,0 0 30px #ff5e00cc;border-color:#ffd24a}}.__eki_av{animation:ekiRingFlame .9s ease-in-out infinite!important;border-color:#ff8a00!important;}" },
     { id: "r_aurora", name: "Anneau Aurore", cost: -1, lootOnly: true, rarity: "epic", swatch: "linear-gradient(135deg,#00ffaa,#7a00ff)", css: "@keyframes ekiRingAur{0%{box-shadow:0 0 12px #00ffaaaa,0 0 22px #00b4ff66}50%{box-shadow:0 0 16px #7a00ffaa,0 0 26px #00ffaa66}100%{box-shadow:0 0 12px #00ffaaaa,0 0 22px #00b4ff66}}.__eki_av{border-color:#00d4aa!important;animation:ekiRingAur 2.4s ease-in-out infinite!important;}" },
     { id: "r_cosmic", name: "Anneau Cosmique", cost: -1, lootOnly: true, rarity: "legendary", swatch: "conic-gradient(from 0deg,#ff5ecb,#7a5cff,#5cffd6,#ff5ecb)", css: "@keyframes ekiRingCos{0%{box-shadow:0 0 14px #ff5ecb,0 0 24px #7a5cff88}33%{box-shadow:0 0 14px #7a5cff,0 0 24px #5cffd688}66%{box-shadow:0 0 14px #5cffd6,0 0 24px #ff5ecb88}100%{box-shadow:0 0 14px #ff5ecb,0 0 24px #7a5cff88}}.__eki_av{border-color:#fff!important;animation:ekiRingCos 3s linear infinite!important;}" }
+  ,
+    { id: "r_sunset", name: "Anneau Coucher de Soleil", cost: 320, rarity: "rare", swatch: "radial-gradient(circle,#ffd0a8,#ff5e8a)", css: ".__eki_av{border-color:#ff7a9a!important;box-shadow:0 0 13px #ff7a9aaa,0 0 22px #ff9d5e66!important;}" },
+    { id: "r_emerald", name: "Anneau Émeraude", cost: 520, rarity: "epic", swatch: "radial-gradient(circle,#9affd0,#00b36b)", css: "@keyframes ekiRingEm{0%,100%{box-shadow:0 0 11px #00e08aaa,0 0 20px #00b36b66}50%{box-shadow:0 0 18px #00ffa6,0 0 30px #00e08a88}}.__eki_av{border-color:#00e08a!important;animation:ekiRingEm 1.6s ease-in-out infinite!important;}" },
+    { id: "r_crown", name: "Anneau Royal", cost: 700, rarity: "legendary", swatch: "conic-gradient(from 0deg,#ffe9a8,#ffffff,#ffd700,#ffe9a8)", css: "@keyframes ekiRingCr{0%{box-shadow:0 0 14px #ffd700,0 0 24px #ffffff66}50%{box-shadow:0 0 20px #ffffff,0 0 30px #ffd70088}100%{box-shadow:0 0 14px #ffd700,0 0 24px #ffffff66}}.__eki_av{border-color:#fff3b0!important;animation:ekiRingCr 2.6s ease-in-out infinite!important;}" }
   ];
   var NAME_SKINS = [
     { id: "none", name: "D\u00E9faut", cost: 0 },
@@ -2311,6 +2331,10 @@ document.addEventListener('DOMContentLoaded', async function() {
     { id: "n_neon", name: "Pseudo N\u00E9on", cost: -1, lootOnly: true, rarity: "epic", swatch: "#39ff14", previewStyle: "color:#39ff14;text-shadow:0 0 8px #39ff1488", css: ".__eki_myname{color:#39ff14!important;text-shadow:0 0 8px #39ff1488!important;}" },
     { id: "n_fire", name: "Pseudo Feu", cost: -1, lootOnly: true, rarity: "epic", swatch: "linear-gradient(0deg,#ff2d00,#ffb347)", previewStyle: "background:linear-gradient(0deg,#ff2d00,#ffb347);-webkit-background-clip:text;background-clip:text;color:transparent", css: ".__eki_myname{background:linear-gradient(0deg,#ff2d00,#ffb347)!important;-webkit-background-clip:text!important;background-clip:text!important;color:transparent!important;}" },
     { id: "n_rainbow", name: "Pseudo Arc-en-ciel", cost: -1, lootOnly: true, rarity: "legendary", swatch: "linear-gradient(90deg,#ff0080,#00d4ff,#ffe600)", previewStyle: "background:linear-gradient(90deg,#ff0080,#00d4ff,#ffe600);-webkit-background-clip:text;background-clip:text;color:transparent", css: "@keyframes ekiNameRb{to{filter:hue-rotate(360deg)}}.__eki_myname{background:linear-gradient(90deg,#ff0080,#00d4ff,#ffe600)!important;-webkit-background-clip:text!important;background-clip:text!important;color:transparent!important;animation:ekiNameRb 4s linear infinite;}" }
+  ,
+    { id: "n_sky", name: "Pseudo Ciel", cost: 300, rarity: "rare", swatch: "linear-gradient(90deg,#5ad1ff,#3b7bff)", previewStyle: "background:linear-gradient(90deg,#5ad1ff,#3b7bff);-webkit-background-clip:text;background-clip:text;color:transparent", css: ".__eki_myname{background:linear-gradient(90deg,#5ad1ff,#3b7bff)!important;-webkit-background-clip:text!important;background-clip:text!important;color:transparent!important;}" },
+    { id: "n_magma", name: "Pseudo Magma", cost: 500, rarity: "epic", swatch: "linear-gradient(90deg,#ffd000,#ff3b00)", previewStyle: "background:linear-gradient(90deg,#ffd000,#ff3b00);-webkit-background-clip:text;background-clip:text;color:transparent", css: ".__eki_myname{background:linear-gradient(90deg,#ffd000,#ff3b00)!important;-webkit-background-clip:text!important;background-clip:text!important;color:transparent!important;}" },
+    { id: "n_galaxy", name: "Pseudo Galaxie", cost: 700, rarity: "legendary", swatch: "linear-gradient(90deg,#b06bff,#3b7bff,#b06bff)", previewStyle: "background:linear-gradient(90deg,#b06bff,#3b7bff,#b06bff);-webkit-background-clip:text;background-clip:text;color:transparent", css: "@keyframes ekiNameGx{to{background-position:200% 0}}.__eki_myname{background:linear-gradient(90deg,#b06bff,#3b7bff,#d0a8ff,#b06bff)!important;background-size:200% auto!important;-webkit-background-clip:text!important;background-clip:text!important;color:transparent!important;animation:ekiNameGx 4s linear infinite;}" }
   ];
   window.__ekiRingSkins = RING_SKINS; window.__ekiNameSkins = NAME_SKINS;
   function skinLookup(kind, id) { var L = kind === "seq" ? SEQ_SKINS : (kind === "note" ? NOTE_SKINS : (kind === "ring" ? RING_SKINS : NAME_SKINS)); return skinById(L, id); }
@@ -2484,7 +2508,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         var col = dayColor(p);
         var cell = document.createElement("div"); cell.style.cssText = "border:1px solid " + (st === "now" ? col : C.line) + ";border-radius:13px;padding:10px 6px;text-align:center;background:" + (st === "now" ? ("linear-gradient(160deg,#1e0030," + col + "22)") : "#190026") + ";opacity:" + (st === "lock" ? ".55" : "1") + ";" + (isSuper ? "grid-column:span 1;" : "");
         var top = document.createElement("div"); top.style.cssText = "font-size:10px;letter-spacing:1px;color:" + (isSuper ? "#FF9D00" : C.sub) + ";font-weight:700;margin-bottom:5px;"; top.textContent = isSuper ? "JOUR 7" : ("JOUR " + day); cell.appendChild(top);
-        var ic = document.createElement("div"); ic.style.cssText = "font-size:28px;line-height:1;margin-bottom:5px;" + (st === "done" ? "filter:grayscale(.6);" : ""); ic.textContent = dayIcon(p); cell.appendChild(ic);
+        var ic = document.createElement("div"); ic.style.cssText = "height:44px;display:flex;align-items:center;justify-content:center;margin-bottom:5px;" + (st === "done" ? "filter:grayscale(.55);opacity:.85;" : ""); if (p.kind === "coins") { ic.innerHTML = '<span style="font-size:26px;">🪙</span>'; } else { ic.innerHTML = crateSmall(col); } cell.appendChild(ic);
         var lbl = document.createElement("div"); lbl.style.cssText = "font-size:10px;color:" + C.sub + ";min-height:24px;"; lbl.textContent = p.kind === "coins" ? (p.coins + " pi\u00E8ces") : (p.label || (boxMeta(p.box).name)); cell.appendChild(lbl);
         if (st === "done") { var d = document.createElement("div"); d.style.cssText = "font-size:12px;color:" + C.green + ";font-weight:700;margin-top:4px;"; d.textContent = "\u2713 Re\u00E7u"; cell.appendChild(d); }
         else if (st === "now") {
@@ -2690,20 +2714,31 @@ document.addEventListener('DOMContentLoaded', async function() {
       + "#__eki_sidebar.collapsed .__sblabel{display:none;}"
       + "#__eki_sidebar .__sbbadge{margin-left:auto;min-width:18px;height:18px;padding:0 5px;box-sizing:border-box;border-radius:9px;background:#EF4444;color:#fff;font:700 11px Roboto;display:none;align-items:center;justify-content:center;flex:none;}"
       + "#__eki_sidebar.collapsed .__sbbadge{position:absolute;margin:0;left:34px;top:8px;}"
+      + "#__eki_sidebar .__sbdot{position:absolute;left:30px;top:7px;width:9px;height:9px;border-radius:50%;background:#EF4444;border:2px solid #140021;display:none;}#__eki_sidebar.expanded .__sbdot{left:auto;right:12px;top:50%;margin-top:-4px;}"
       + "body.__eki_sb [data-screen-label=\"Studio\"]{margin-left:58px;}"
       + "@media (max-width:719px){body.__eki_sb [data-screen-label=\"Studio\"]{margin-left:0;}}";
     document.head.appendChild(st);
   }
   function sbItems() {
+    var I = {
+      studio: '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M4 8h11"/><circle cx="16" cy="8" r="2.1"/><path d="M19 8h1"/><path d="M4 16h4"/><circle cx="9.5" cy="16" r="2.1"/><path d="M12 16h8"/></svg>',
+      projects: '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8a2 2 0 0 1 2-2h3l2 2h7a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"/></svg>',
+      messages: '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5.5" width="18" height="13" rx="2.2"/><path d="M4 7l8 5.5L20 7"/></svg>',
+      feed: '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.9"><circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17" stroke-linecap="round"/><path d="M12 3.5c2.4 2.3 2.4 14.7 0 17" stroke-linecap="round"/><path d="M12 3.5c-2.4 2.3-2.4 14.7 0 17" stroke-linecap="round"/></svg>',
+      daily: '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="9.5" width="16" height="10.5" rx="1.5"/><path d="M3.2 9.5h17.6"/><path d="M12 9.5V20"/><path d="M12 9.5C12 7 9.8 5.6 8.6 6.6 7.4 7.6 9 9.5 12 9.5z"/><path d="M12 9.5c0-2.5 2.2-3.9 3.4-2.9 1.2 1-.4 2.9-3.4 2.9z"/></svg>',
+      dash: '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M5 20v-7"/><path d="M12 20V5"/><path d="M19 20v-9"/></svg>',
+      shop: '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8h12l-1 11.5a1.5 1.5 0 0 1-1.5 1.4H8.5A1.5 1.5 0 0 1 7 19.5z"/><path d="M9 8.5V6.5a3 3 0 0 1 6 0v2"/></svg>',
+      profile: '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><circle cx="12" cy="8.5" r="3.6"/><path d="M5.5 20a6.5 6.5 0 0 1 13 0"/></svg>'
+    };
     return [
-      { id: "studio", icon: "\uD83C\uDF9B\uFE0F", label: "S\u00E9quenceur", act: function () { var c = window.__ekiComponent; if (c) c.setState({ screen: "studio" }); } },
-      { id: "projects", icon: "\uD83D\uDCC1", label: "Projets", act: function () { var c = window.__ekiComponent; if (c && c.goToProjects) c.goToProjects(); } },
-      { id: "messages", icon: "\u2709\uFE0F", label: "Messages", act: function () { if (typeof openMessenger === "function") openMessenger(); }, badge: true },
-      { id: "feed", icon: "\uD83C\uDF0D", label: "Communaut\u00E9", act: function () { if (typeof openFeed === "function") openFeed(); } },
-      { id: "daily", icon: "\uD83C\uDF81", label: "Cadeaux du jour", act: function () { if (typeof openDailyRewards === "function") openDailyRewards(); } },
-      { id: "dash", icon: "\uD83D\uDCCA", label: "Tableau de bord", act: function () { if (typeof openMyPublications === "function") openMyPublications(); } },
-      { id: "shop", icon: "\uD83D\uDED2", label: "Boutique", act: function () { if (typeof openShop === "function") openShop(); } },
-      { id: "profile", icon: "\uD83D\uDC64", label: "Profil", act: function () { if (typeof openProfile === "function") openProfile(); } }
+      { id: "studio", icon: I.studio, label: "S\u00E9quenceur", act: function () { var c = window.__ekiComponent; if (c) c.setState({ screen: "studio" }); } },
+      { id: "projects", icon: I.projects, label: "Projets", act: function () { var c = window.__ekiComponent; if (c && c.goToProjects) c.goToProjects(); } },
+      { id: "messages", icon: I.messages, label: "Messages", act: function () { if (typeof openMessenger === "function") openMessenger(); }, badge: true },
+      { id: "feed", icon: I.feed, label: "Communaut\u00E9", act: function () { if (typeof openFeed === "function") openFeed(); } },
+      { id: "daily", icon: I.daily, label: "Cadeaux du jour", act: function () { if (typeof openDailyRewards === "function") openDailyRewards(); }, dot: true },
+      { id: "dash", icon: I.dash, label: "Tableau de bord", act: function () { if (typeof openMyPublications === "function") openMyPublications(); } },
+      { id: "shop", icon: I.shop, label: "Boutique", act: function () { if (typeof openShop === "function") openShop(); } },
+      { id: "profile", icon: I.profile, label: "Profil", act: function () { if (typeof openProfile === "function") openProfile(); } }
     ];
   }
   function getSbExp() { try { return localStorage.getItem("eki_sb_exp") === "1"; } catch (e) { return false; } }
@@ -2732,10 +2767,11 @@ document.addEventListener('DOMContentLoaded', async function() {
     sbItems().forEach(function (it) {
       var b = document.createElement("button"); b.className = "__sbitem"; b.setAttribute("data-id", it.id); b.title = it.label;
       b.style.position = "relative";
-      var ic = document.createElement("span"); ic.className = "__sbicon"; ic.textContent = it.icon;
+      var ic = document.createElement("span"); ic.className = "__sbicon"; ic.innerHTML = it.icon;
       var lb = document.createElement("span"); lb.className = "__sblabel"; lb.textContent = it.label;
       b.appendChild(ic); b.appendChild(lb);
       if (it.badge) { var bd = document.createElement("span"); bd.className = "__sbbadge __eki_sbmsgbadge"; b.appendChild(bd); }
+      if (it.dot) { var dd = document.createElement("span"); dd.className = "__sbdot __eki_sbdailydot"; b.appendChild(dd); }
       b.onclick = function () { it.act(); };
       sb.appendChild(b);
     });
@@ -2743,8 +2779,9 @@ document.addEventListener('DOMContentLoaded', async function() {
     applySidebarState(sb); updateSidebarBadge();
   }
   function updateSidebarBadge() {
-    if (typeof cUnreadCount !== "function" || !dbReady()) return;
-    cUnreadCount(function (n) { var bd = document.querySelector(".__eki_sbmsgbadge"); if (!bd) return; if (n > 0) { bd.textContent = n > 99 ? "99+" : ("" + n); bd.style.display = "flex"; } else bd.style.display = "none"; });
+    if (!dbReady()) return;
+    if (typeof cUnreadCount === "function") cUnreadCount(function (n) { var bd = document.querySelector(".__eki_sbmsgbadge"); if (!bd) return; if (n > 0) { bd.textContent = n > 99 ? "99+" : ("" + n); bd.style.display = "flex"; } else bd.style.display = "none"; });
+    if (typeof cDailyStatus === "function") cDailyStatus(function (st) { var dd = document.querySelector(".__eki_sbdailydot"); if (!dd) return; dd.style.display = (st && st.can_claim) ? "block" : "none"; });
   }
   // masquer le bouton "Projets" du menu du haut quand le rail est affiché
   function hideTopProjets() {
