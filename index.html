@@ -282,7 +282,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     var divs = document.getElementsByTagName("div");
     for (var i = 0; i < divs.length; i++) {
       var d = divs[i];
-      if (d.children.length === 0 && d.textContent.trim() === "EkiLoop") { d.parentNode.insertBefore(buildAvatar(), d.nextSibling); return; }
+      if (d.children.length === 0 && d.textContent.trim() === "EkiLoop") { d.parentNode.insertBefore(buildAvatar(), d); return; }
     }
   }
   function hideAuthButtons() {
@@ -1541,11 +1541,17 @@ document.addEventListener('DOMContentLoaded', async function() {
     if (!window.__ekiAuthed || !window.__ekiAuthed()) { var ex = document.getElementById("__eki_coinbar"); if (ex) ex.remove(); return; }
     var av = document.querySelector(".__eki_av"); if (!av) return;
     if (!document.getElementById("__eki_coinbar")) {
-      var bar = document.createElement("div"); bar.id = "__eki_coinbar"; bar.style.cssText = "display:inline-flex;align-items:center;gap:8px;margin-left:10px;vertical-align:middle;";
-      var coin = document.createElement("button"); coin.title = "Mes pièces — comment en gagner / dépenser"; coin.style.cssText = "display:inline-flex;align-items:center;gap:5px;padding:7px 12px;border-radius:20px;border:1px solid #FFB02266;background:#FF772318;color:" + C.orange + ";font:700 13px Roboto,system-ui,sans-serif;cursor:pointer;";
-      coin.innerHTML = "\uD83E\uDE99 <span id=\"__eki_coinval\">…</span>"; coin.onclick = function () { openCoinsInfo(); };
-      var shop = document.createElement("button"); shop.className = "__eki_shop"; shop.title = "Boutique"; shop.textContent = "\uD83D\uDED2"; shop.style.cssText = "display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:11px;border:1px solid #FFB02266;background:#FF772318;color:" + C.txt + ";font-size:16px;cursor:pointer;"; shop.onclick = function () { openShop(); };
-      bar.appendChild(coin); bar.appendChild(shop); av.parentNode.insertBefore(bar, av);
+      var GC = '<svg width="16" height="16" viewBox="0 0 24 24" style="flex:none"><defs><radialGradient id="ekigc" cx="40%" cy="34%" r="72%"><stop offset="0%" stop-color="#FFF6C2"/><stop offset="55%" stop-color="#FFCC33"/><stop offset="100%" stop-color="#C8860B"/></radialGradient></defs><circle cx="12" cy="12" r="9.5" fill="url(#ekigc)" stroke="#8A5E00" stroke-width="1"/><circle cx="12" cy="12" r="6.6" fill="none" stroke="#8A5E0055" stroke-width="1"/><path d="M12 7.6l1.25 2.55 2.8.4-2.03 1.95.48 2.78L12 14.93l-2.5 1.35.48-2.78L7.95 10.5l2.8-.4z" fill="#8A5E00"/></svg>';
+      var logo = null, divs = document.getElementsByTagName("div");
+      for (var li = 0; li < divs.length; li++) { if (divs[li].children.length === 0 && divs[li].textContent.trim() === "EkiLoop") { logo = divs[li]; break; } }
+      var bar = document.createElement("div"); bar.id = "__eki_coinbar"; bar.style.cssText = "display:inline-flex;align-items:stretch;margin-left:10px;vertical-align:middle;border:1px solid #FFB02255;border-radius:20px;overflow:hidden;background:#FF77230f;";
+      var coin = document.createElement("button"); coin.title = "Mes pièces — comment en gagner / dépenser"; coin.style.cssText = "display:inline-flex;align-items:center;gap:6px;padding:7px 13px;border:none;background:transparent;color:" + C.orange + ";font:800 13px Roboto,system-ui,sans-serif;cursor:pointer;";
+      coin.innerHTML = GC + '<span id="__eki_coinval">…</span>'; coin.onclick = function () { openCoinsInfo(); };
+      var sep = document.createElement("div"); sep.style.cssText = "width:1px;background:#FFB02244;align-self:stretch;";
+      var shop = document.createElement("button"); shop.className = "__eki_shop"; shop.title = "Boutique"; shop.style.cssText = "display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border:none;background:transparent;color:" + C.txt + ";font:600 13px Roboto;cursor:pointer;";
+      shop.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6"/></svg><span>Boutique</span>'; shop.onclick = function () { openShop(); };
+      bar.appendChild(coin); bar.appendChild(sep); bar.appendChild(shop);
+      if (logo && logo.parentNode) logo.parentNode.insertBefore(bar, logo.nextSibling); else av.parentNode.insertBefore(bar, av);
       refreshCoinPill(); _coinTs = Date.now();
     }
     if (Date.now() - _coinTs > 6000) { _coinTs = Date.now(); refreshCoinPill(); }
@@ -2824,6 +2830,7 @@ document.addEventListener('DOMContentLoaded', async function() {
       + "#__eki_sidebar.collapsed .__sbbadge{position:absolute;margin:0;left:34px;top:8px;}"
       + "#__eki_sidebar .__sbdot{position:absolute;left:30px;top:7px;width:9px;height:9px;border-radius:50%;background:#EF4444;border:2px solid #140021;display:none;}#__eki_sidebar.expanded .__sbdot{left:auto;right:12px;top:50%;margin-top:-4px;}"
       + "body.__eki_sb [data-screen-label=\"Studio\"],body.__eki_sb [data-eki-screen=\"projects\"]{margin-left:58px;}"
+      + "body.__eki_sb.__eki_sbx [data-screen-label=\"Studio\"],body.__eki_sb.__eki_sbx [data-eki-screen=\"projects\"]{margin-left:214px;}"
       + "body.__eki_sb .__eki_page{left:58px!important;}"
       + "@media (max-width:719px){body.__eki_sb [data-screen-label=\"Studio\"],body.__eki_sb [data-eki-screen=\"projects\"]{margin-left:0;}body.__eki_sb .__eki_page{left:0!important;}}";
     document.head.appendChild(st);
@@ -2866,6 +2873,7 @@ document.addEventListener('DOMContentLoaded', async function() {
   function applySidebarState(sb) {
     var exp = getSbExp();
     sb.className = exp ? "expanded" : "collapsed";
+    document.body.classList.toggle("__eki_sbx", exp);
     var tg = sb.querySelector(".__sbtoggle .__sbarrow"); if (tg) tg.textContent = exp ? "\u2039" : "\u203A";
     var cur = currentSbId();
     var items = sb.querySelectorAll(".__sbitem");
@@ -2991,7 +2999,7 @@ document.addEventListener('DOMContentLoaded', async function() {
       + "#__eki_seqbar .__eki_tool{width:38px;height:38px;border-radius:50%;border:1px solid #3A1A42;background:transparent;color:#F5F0F2aa;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .14s;}"
       + "#__eki_seqbar .__eki_tool:hover{color:#fff;border-color:#BE09FF66;background:#2a0a3a;}"
       + "#__eki_seqbar .__eki_tool.active{color:#fff;background:linear-gradient(135deg,#FF772333,#BE09FF33);border-color:#BE09FF;box-shadow:inset 0 0 0 1px #BE09FF55;}"
-      + "#__eki_inspector{position:fixed;top:70px;bottom:78px;left:0;width:244px;z-index:19;background:#120020;border-right:1px solid #2a0a3a;box-shadow:4px 0 26px #0007;display:flex;flex-direction:column;overflow:hidden;}"
+      + "#__eki_inspector{position:fixed;top:70px;bottom:0;right:0;left:auto;width:248px;z-index:19;background:#120020;border-left:1px solid #2a0a3a;box-shadow:-4px 0 26px #0007;display:flex;flex-direction:column;overflow:hidden;}"
       + "#__eki_inspector .__eki_insp_head{padding:13px 16px 9px;font:800 14px Roboto;color:#F5F0F2;border-bottom:1px solid #2a0a3a;flex:none;display:flex;align-items:center;gap:8px;}"
       + "#__eki_insp_body{flex:1;overflow-y:auto;overflow-x:hidden;padding:14px 16px 20px;}"
       + "#__eki_inspector .__eki_fld{margin-bottom:15px;}"
@@ -3008,17 +3016,14 @@ document.addEventListener('DOMContentLoaded', async function() {
       + "body.__eki_seq .__eki_transport{display:none !important;}"
       + "#__eki_inspcollapse{margin-left:auto;background:transparent;border:none;color:#F5F0F2aa;font-size:21px;line-height:1;cursor:pointer;padding:0 2px;}"
       + "#__eki_inspcollapse:hover{color:#fff;}"
-      + "#__eki_inspreopen{position:fixed;left:0;top:86px;z-index:19;width:34px;height:42px;border:1px solid #2a0a3a;border-left:none;border-radius:0 12px 12px 0;background:#120020;color:#F5F0F2aa;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:4px 0 18px #0007;}"
+      + "#__eki_inspreopen{position:fixed;right:0;top:86px;z-index:19;width:34px;height:42px;border:1px solid #2a0a3a;border-right:none;border-radius:12px 0 0 12px;background:#120020;color:#F5F0F2aa;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:-4px 0 18px #0007;}"
       + "#__eki_inspreopen:hover{color:#fff;background:#1c0030;}"
-      + "body.__eki_sb #__eki_inspreopen{left:58px;}"
-      + ".__eki_accrow{display:flex;gap:6px;margin-bottom:15px;}"
+            + ".__eki_accrow{display:flex;gap:6px;margin-bottom:15px;}"
       + ".__eki_accbtn{flex:1;padding:9px 0;border-radius:10px;border:1px solid #3A1A42;background:#1e0030;color:#F5F0F2cc;font:700 15px Roboto;cursor:pointer;}"
       + ".__eki_accbtn:hover{background:#2a0a3a;color:#fff;}"
       + ".__eki_accbtn.on{background:linear-gradient(135deg,#FF772333,#BE09FF33);border-color:#BE09FF;color:#fff;}"
-      + "body.__eki_insp [data-screen-label=\"Studio\"]{margin-left:244px;}"
-      + "body.__eki_sb.__eki_insp [data-screen-label=\"Studio\"]{margin-left:302px;}"
-      + "body.__eki_sb #__eki_inspector{left:58px;}"
-      + "@media (max-width:859px){body.__eki_insp [data-screen-label=\"Studio\"],body.__eki_sb.__eki_insp [data-screen-label=\"Studio\"]{margin-left:0;}#__eki_inspector{box-shadow:8px 0 40px #000c;}}";
+      + "body.__eki_insp [data-screen-label=\"Studio\"]{margin-right:248px;}"
+      + "@media (max-width:859px){body.__eki_insp [data-screen-label=\"Studio\"]{margin-right:0;}#__eki_inspector{box-shadow:-8px 0 40px #000c;}}";
     document.head.appendChild(st);
   }
 
@@ -3035,7 +3040,7 @@ document.addEventListener('DOMContentLoaded', async function() {
   function noteOvMap() { var c = window.__ekiComponent; if (!c) return {}; if (!c._noteOv) c._noteOv = {}; return c._noteOv; }
   function getNoteOv(tid, r, s) { var m = noteOvMap()[tid]; var k = r + ":" + s; return (m && (k in m)) ? m[k] : null; }
   function setNoteOv(tid, r, s, vel) { var m = noteOvMap(); if (!m[tid]) m[tid] = {}; m[tid][r + ":" + s] = vel; }
-  function clearNoteOv(tid, r, s) { var m = noteOvMap()[tid]; if (m) delete m[r + ":" + s]; }
+  function clearNoteOv(tid, r, s) { var m = noteOvMap()[tid]; if (m) delete m[r + ":" + s]; var cell = document.querySelector('[data-rc="' + r + ':' + s + '"]'); if (cell) { var inner = cell.querySelector("div"); if (inner) inner.style.opacity = ""; } }
   window.__ekiNoteVel = function (tid, r, s, defVel) { var v = getNoteOv(tid, r, s); return (v == null) ? defVel : v; };
 
   // ---------- sélection de note ----------
@@ -3198,7 +3203,7 @@ document.addEventListener('DOMContentLoaded', async function() {
   function inspOpen() { return window.__ekiInspOpen == null ? true : window.__ekiInspOpen; }
   function buildInspector() {
     var p = document.createElement("div"); p.id = "__eki_inspector";
-    var h = document.createElement("div"); h.className = "__eki_insp_head"; h.innerHTML = SEQ_ICN.gear + ' <span id="__eki_insp_title">Réglages du son</span><button id="__eki_inspcollapse" title="Réduire">\u2039</button>'; p.appendChild(h);
+    var h = document.createElement("div"); h.className = "__eki_insp_head"; h.innerHTML = SEQ_ICN.gear + ' <span id="__eki_insp_title">Réglages du son</span><button id="__eki_inspcollapse" title="Réduire">\u203A</button>'; p.appendChild(h);
     var cb = h.querySelector("#__eki_inspcollapse"); if (cb) cb.onclick = function () { window.__ekiInspOpen = false; placeSeqUI(); };
     var b = document.createElement("div"); b.id = "__eki_insp_body"; p.appendChild(b);
     document.body.appendChild(p);
@@ -3270,11 +3275,12 @@ document.addEventListener('DOMContentLoaded', async function() {
   }
   function paintNoteVol() {
     var c = window.__ekiComponent; if (!c || !c.currentTrack) return; var t = c.currentTrack(); if (!t) return;
-    var cells = document.querySelectorAll("[data-grid-scroll] [data-rc]");
-    for (var i = 0; i < cells.length; i++) {
-      var p = cells[i].dataset.rc.split(":"); var ov = getNoteOv(t.id, +p[0], +p[1]);
-      var inner = cells[i].querySelector("div"); if (!inner) continue;
-      if (ov != null) { inner.style.opacity = (0.7 + 0.3 * Math.max(0, Math.min(1, ov))).toFixed(2); }
+    var ov = c._noteOv && c._noteOv[t.id]; if (!ov) return;
+    var keys = Object.keys(ov); if (!keys.length) return;
+    for (var k = 0; k < keys.length; k++) {
+      var cell = document.querySelector('[data-rc="' + keys[k] + '"]'); if (!cell) continue;
+      var inner = cell.querySelector("div"); if (!inner) continue;
+      inner.style.opacity = (0.7 + 0.3 * Math.max(0, Math.min(1, ov[keys[k]]))).toFixed(2);
     }
   }
 
