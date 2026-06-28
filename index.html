@@ -2907,7 +2907,11 @@ document.addEventListener('DOMContentLoaded', async function() {
       b.appendChild(ic); b.appendChild(lb);
       if (it.badge) { var bd = document.createElement("span"); bd.className = "__sbbadge __eki_sbmsgbadge"; b.appendChild(bd); }
       if (it.dot) { var dd = document.createElement("span"); dd.className = "__sbdot __eki_sbdailydot"; b.appendChild(dd); }
-      b.onclick = function () { it.act(); };
+      b.onclick = function () {
+        var pgs = document.querySelectorAll(".__eki_page"); for (var k = 0; k < pgs.length; k++) pgs[k].remove();
+        var md = document.getElementById("__eki_modal"); if (md) md.remove();
+        it.act();
+      };
       sb.appendChild(b);
     });
     document.body.appendChild(sb);
@@ -3002,7 +3006,15 @@ document.addEventListener('DOMContentLoaded', async function() {
       + "#__eki_inspector .__eki_hint{font-size:11px;color:#F5F0F255;line-height:1.4;margin-top:10px;}"
       + "[data-grid-scroll] [data-rc] .__eki_selnote{outline:2px solid #fff !important;outline-offset:1px;box-shadow:0 0 0 2px #BE09FF,0 0 14px #BE09FFaa !important;}"
       + "body.__eki_seq .__eki_transport{display:none !important;}"
-      + "body.__eki_seq.__eki_seqmore .__eki_transport{display:flex !important;}"
+      + "#__eki_inspcollapse{margin-left:auto;background:transparent;border:none;color:#F5F0F2aa;font-size:21px;line-height:1;cursor:pointer;padding:0 2px;}"
+      + "#__eki_inspcollapse:hover{color:#fff;}"
+      + "#__eki_inspreopen{position:fixed;left:0;top:86px;z-index:19;width:34px;height:42px;border:1px solid #2a0a3a;border-left:none;border-radius:0 12px 12px 0;background:#120020;color:#F5F0F2aa;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:4px 0 18px #0007;}"
+      + "#__eki_inspreopen:hover{color:#fff;background:#1c0030;}"
+      + "body.__eki_sb #__eki_inspreopen{left:58px;}"
+      + ".__eki_accrow{display:flex;gap:6px;margin-bottom:15px;}"
+      + ".__eki_accbtn{flex:1;padding:9px 0;border-radius:10px;border:1px solid #3A1A42;background:#1e0030;color:#F5F0F2cc;font:700 15px Roboto;cursor:pointer;}"
+      + ".__eki_accbtn:hover{background:#2a0a3a;color:#fff;}"
+      + ".__eki_accbtn.on{background:linear-gradient(135deg,#FF772333,#BE09FF33);border-color:#BE09FF;color:#fff;}"
       + "body.__eki_insp [data-screen-label=\"Studio\"]{margin-left:244px;}"
       + "body.__eki_sb.__eki_insp [data-screen-label=\"Studio\"]{margin-left:302px;}"
       + "body.__eki_sb #__eki_inspector{left:58px;}"
@@ -3099,6 +3111,14 @@ document.addEventListener('DOMContentLoaded', async function() {
     if (n) buildNotePanel(body, comp, t, n); else buildTrackPanel(body, comp, t);
   }
   function buildTrackPanel(body, comp, t) {
+    var isDrum = ["batterie", "perc", "808"].indexOf(t.instrument) >= 0;
+    if (!isDrum) {
+      var fg = fld("Gamme");
+      var gsel = document.createElement("select");
+      SEQ_SCALES.forEach(function (sc) { var op = document.createElement("option"); op.value = sc.key; op.textContent = sc.label; if ((window.__ekiScaleKey || "majeur") === sc.key) op.selected = true; gsel.appendChild(op); });
+      gsel.onchange = function () { setScale(gsel.value); };
+      fg.box.appendChild(gsel); body.appendChild(fg.box);
+    }
     // instrument
     var f0 = fld("Instrument");
     var sel = document.createElement("select");
@@ -3118,7 +3138,6 @@ document.addEventListener('DOMContentLoaded', async function() {
     body.appendChild(rangeFld("Tempo", bpm + " BPM", 30, 180, bpm, 1, function (v, b) { b.textContent = v + " BPM"; comp.onBpm({ target: { value: v } }); }));
 
     var clr = document.createElement("button"); clr.className = "__eki_ibtn"; clr.textContent = "Effacer la piste"; clr.onclick = function () { if (comp.clearTrack) comp.clearTrack(); clearSelNote(); }; body.appendChild(clr);
-    var more = document.createElement("button"); more.className = "__eki_ibtn"; more.textContent = document.body.classList.contains("__eki_seqmore") ? "Masquer accords & voix" : "Accords & voix…"; more.onclick = function () { document.body.classList.toggle("__eki_seqmore"); more.textContent = document.body.classList.contains("__eki_seqmore") ? "Masquer accords & voix" : "Accords & voix…"; }; body.appendChild(more);
     var hint = document.createElement("div"); hint.className = "__eki_hint"; hint.textContent = "Ces réglages s'appliquent à toutes les notes sans réglage spécial. Clique une note (outil curseur) pour la régler à part."; body.appendChild(hint);
   }
   function buildNotePanel(body, comp, t, n) {
@@ -3136,6 +3155,14 @@ document.addEventListener('DOMContentLoaded', async function() {
     body.appendChild(rangeFld("Durée", len + " pas", 1, Math.max(maxL, len), len, 1, function (v, b) {
       b.textContent = v + " pas"; comp.setLen(n.r, n.start, n.start + v - 1); highlightSelNote();
     }));
+
+    var L0 = (t.steps[n.r] || [])[n.start] || 0; var isSharp = L0 < 0, isFlat = L0 >= 100;
+    var accF = fld("Altération"); var accRow = document.createElement("div"); accRow.className = "__eki_accrow";
+    function mkAcc(txt, on, fn) { var bb = document.createElement("button"); bb.className = "__eki_accbtn" + (on ? " on" : ""); bb.textContent = txt; bb.onclick = function () { fn(); setTimeout(function () { renderInspector(true); highlightSelNote(); }, 40); }; return bb; }
+    accRow.appendChild(mkAcc("\u266D", isFlat, function () { comp._makeFlat(n.r, n.start); }));
+    accRow.appendChild(mkAcc("\u266E", !isSharp && !isFlat, function () { var v = (comp.currentTrack().steps[n.r] || [])[n.start]; var l = v >= 100 ? v - 100 : Math.abs(v); comp.setStep(n.r, n.start, l); }));
+    accRow.appendChild(mkAcc("\u266F", isSharp, function () { comp._makeSharp(n.r, n.start); }));
+    accF.box.appendChild(accRow); body.appendChild(accF.box);
 
     var chk = document.createElement("label"); chk.className = "__eki_chk";
     var cb = document.createElement("input"); cb.type = "checkbox"; cb.id = "__eki_usedef"; cb.checked = !hasOv;
@@ -3168,10 +3195,11 @@ document.addEventListener('DOMContentLoaded', async function() {
     document.body.appendChild(bar);
     return bar;
   }
-  function inspOpen() { return window.__ekiInspOpen == null ? (window.innerWidth >= 980) : window.__ekiInspOpen; }
+  function inspOpen() { return window.__ekiInspOpen == null ? true : window.__ekiInspOpen; }
   function buildInspector() {
     var p = document.createElement("div"); p.id = "__eki_inspector";
-    var h = document.createElement("div"); h.className = "__eki_insp_head"; h.innerHTML = SEQ_ICN.gear + ' <span id="__eki_insp_title">Réglages du son</span>'; p.appendChild(h);
+    var h = document.createElement("div"); h.className = "__eki_insp_head"; h.innerHTML = SEQ_ICN.gear + ' <span id="__eki_insp_title">Réglages du son</span><button id="__eki_inspcollapse" title="Réduire">\u2039</button>'; p.appendChild(h);
+    var cb = h.querySelector("#__eki_inspcollapse"); if (cb) cb.onclick = function () { window.__ekiInspOpen = false; placeSeqUI(); };
     var b = document.createElement("div"); b.id = "__eki_insp_body"; p.appendChild(b);
     document.body.appendChild(p);
     return p;
@@ -3185,6 +3213,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     var bar = document.getElementById("__eki_seqbar"), insp = document.getElementById("__eki_inspector");
     if (!show) {
       if (bar) bar.remove(); if (insp) insp.remove();
+      var tb = document.getElementById("__eki_inspreopen"); if (tb) tb.remove();
       document.body.classList.remove("__eki_seq"); document.body.classList.remove("__eki_insp");
       return;
     }
@@ -3197,13 +3226,16 @@ document.addEventListener('DOMContentLoaded', async function() {
     else if (!wantInsp && insp) { insp.remove(); insp = null; }
     document.body.classList.toggle("__eki_insp", !!insp);
     if (insp) renderInspector(false);
+    var tab = document.getElementById("__eki_inspreopen");
+    if (!wantInsp) { if (!tab) { tab = document.createElement("button"); tab.id = "__eki_inspreopen"; tab.title = "Ouvrir les réglages"; tab.innerHTML = SEQ_ICN.gear; tab.onclick = function () { window.__ekiInspOpen = true; placeSeqUI(); }; document.body.appendChild(tab); } }
+    else if (tab) { tab.remove(); }
     // état play
     var pb = document.getElementById("__eki_playbtn"); if (pb) { var playing = c.state && c.state.isPlaying; pb.innerHTML = playing ? SEQ_ICN.pause : SEQ_ICN.play; }
     // centrage de la barre sous la grille
     var g = document.querySelector("[data-grid-scroll]");
     if (g) { var r = g.getBoundingClientRect(); if (r.width > 0) bar.style.left = Math.round(r.left + r.width / 2) + "px"; }
     else { bar.style.left = "50%"; }
-    wireGridTools(); highlightSelNote();
+    wireScale(); wireGridTools(); highlightSelNote(); paintNoteVol();
   }
 
   // ---------- barre espace = play / pause ----------
@@ -3216,6 +3248,34 @@ document.addEventListener('DOMContentLoaded', async function() {
       var c = window.__ekiComponent;
       if (c && c.state && c.state.screen === "studio" && !document.querySelector(".__eki_page")) { e.preventDefault(); if (c.togglePlay) c.togglePlay(); }
     });
+  }
+
+  var SEQ_SCALES = [
+    { key: "libre", label: "Gamme libre (chromatique)", notes: ["C4", "C#4", "D4", "D#4", "E4", "F4", "F#4", "G4", "G#4", "A4", "A#4", "B4"] },
+    { key: "majeur", label: "Do majeur", notes: ["C4", "D4", "E4", "F4", "G4", "A4", "B4", "C5", "D5", "E5", "F5", "G5"] },
+    { key: "mineur", label: "La mineur", notes: ["A3", "B3", "C4", "D4", "E4", "F4", "G4", "A4", "B4", "C5", "D5", "E5"] },
+    { key: "penta", label: "Pentatonique majeure", notes: ["C4", "D4", "E4", "G4", "A4", "C5", "D5", "E5", "G5", "A5", "C6", "D6"] },
+    { key: "blues", label: "Blues (Do)", notes: ["C4", "Eb4", "F4", "Gb4", "G4", "Bb4", "C5", "Eb5", "F5", "Gb5", "G5", "Bb5"] },
+    { key: "dorien", label: "Dorien (Ré)", notes: ["D4", "E4", "F4", "G4", "A4", "B4", "C5", "D5", "E5", "F5", "G5", "A5"] }
+  ];
+  function setScale(key) {
+    var sc = null; for (var i = 0; i < SEQ_SCALES.length; i++) if (SEQ_SCALES[i].key === key) sc = SEQ_SCALES[i];
+    window.__ekiScaleKey = key; window.__ekiScale = sc ? sc.notes.slice() : null;
+    var c = window.__ekiComponent; if (c && c.setState) c.setState(function (st) { return { _scaleBump: (st._scaleBump || 0) + 1 }; });
+  }
+  function wireScale() {
+    var c = window.__ekiComponent; if (!c || c.__ekiScalePatched || !c.currentScale) return; c.__ekiScalePatched = true;
+    var orig = c.currentScale.bind(c);
+    c.currentScale = function () { var s = window.__ekiScale; return (s && s.length) ? s : orig(); };
+  }
+  function paintNoteVol() {
+    var c = window.__ekiComponent; if (!c || !c.currentTrack) return; var t = c.currentTrack(); if (!t) return;
+    var cells = document.querySelectorAll("[data-grid-scroll] [data-rc]");
+    for (var i = 0; i < cells.length; i++) {
+      var p = cells[i].dataset.rc.split(":"); var ov = getNoteOv(t.id, +p[0], +p[1]);
+      var inner = cells[i].querySelector("div"); if (!inner) continue;
+      if (ov != null) { inner.style.opacity = (0.7 + 0.3 * Math.max(0, Math.min(1, ov))).toFixed(2); }
+    }
   }
 
   window.__ekiPlaceSeqUI = placeSeqUI;
