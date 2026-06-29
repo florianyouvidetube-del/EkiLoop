@@ -596,6 +596,12 @@ document.addEventListener('DOMContentLoaded', async function() {
     }
   }
 
+  var _ekiCoinN = 0;
+  function coinIco(sz) {
+    sz = sz || 16; var id = "ekic" + (++_ekiCoinN);
+    return '<svg width="' + sz + '" height="' + sz + '" viewBox="0 0 24 24" style="flex:none;vertical-align:middle;display:inline-block"><defs><radialGradient id="' + id + '" cx="40%" cy="34%" r="72%"><stop offset="0%" stop-color="#FFF6C2"/><stop offset="55%" stop-color="#FFCC33"/><stop offset="100%" stop-color="#C8860B"/></radialGradient></defs><circle cx="12" cy="12" r="9.5" fill="url(#' + id + ')" stroke="#8A5E00" stroke-width="1"/><circle cx="12" cy="12" r="6.6" fill="none" stroke="#8A5E0055" stroke-width="1"/><path d="M12 7.6l1.25 2.55 2.8.4-2.03 1.95.48 2.78L12 14.93l-2.5 1.35.48-2.78L7.95 10.5l2.8-.4z" fill="#8A5E00"/></svg>';
+  }
+  window.__ekiCoinIco = coinIco;
   /* ==================  MODULE COMMUNAUTÉ — partie 1  ================== */
   window.__ekiCurrentOrigin = window.__ekiCurrentOrigin || null;
 
@@ -1483,7 +1489,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     var _scroll = document.createElement("div"); _scroll.style.cssText = "flex:1;overflow:auto;padding:22px 26px 48px;";
     var card = document.createElement("div"); card.style.cssText = "max-width:820px;margin:0 auto;";
     _scroll.appendChild(card); ov.appendChild(_scroll); document.body.appendChild(ov);
-    showSectionIntro("shop", "La Boutique", ["Dépense tes pièces 🪙 en skins de séquenceur et de notes.", "Onglet « Revenus » : vois comment tu gagnes tes pièces.", "Tu peux aussi booster un morceau pour le mettre en avant."]);
+    showSectionIntro("shop", "La Boutique", ["Dépense tes pièces en skins de séquenceur et de notes.", "Onglet « Revenus » : vois comment tu gagnes tes pièces.", "Tu peux aussi booster un morceau pour le mettre en avant."]);
     var bal = document.createElement("div"); bal.style.cssText = "display:flex;align-items:center;gap:8px;margin-bottom:14px;font:700 18px Roboto;color:" + C.orange + ";"; bal.textContent = "\uD83D\uDCB0 …"; card.appendChild(bal);
     var tabs = document.createElement("div"); tabs.style.cssText = "display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;"; card.appendChild(tabs);
     var body = document.createElement("div"); card.appendChild(body);
@@ -1557,10 +1563,10 @@ document.addEventListener('DOMContentLoaded', async function() {
     if (Date.now() - _coinTs > 6000) { _coinTs = Date.now(); refreshCoinPill(); }
   }
   function openCoinsInfo() {
-    var card = modalShell("\uD83E\uDE99 Mes pièces", 420);
+    var card = modalShell("Mes pièces", 420);
     var bal = document.createElement("div"); bal.style.cssText = "font:800 28px Roboto;color:" + C.orange + ";text-align:center;margin-bottom:2px;"; bal.textContent = "…"; card.appendChild(bal);
     var sub = document.createElement("div"); sub.style.cssText = "text-align:center;font-size:12px;color:" + C.sub + ";margin-bottom:18px;"; sub.textContent = "ton solde actuel"; card.appendChild(sub);
-    cWallet(function (co) { bal.textContent = coinFmt(co) + " \uD83E\uDE99"; });
+    cWallet(function (co) { bal.innerHTML = coinFmt(co) + " " + coinIco(22); });
     var earn = document.createElement("div"); earn.style.cssText = "border:1px solid " + C.line + ";border-radius:12px;padding:14px;margin-bottom:12px;background:#1e0030;";
     earn.innerHTML = "<div style='font-weight:700;color:" + C.txt + ";margin-bottom:8px'>Comment en gagner</div><div style='font-size:13px;color:" + C.sub + ";line-height:1.7'>\u25B6 +1 par écoute de tes morceaux<br>\uD83D\uDC4D +3 par like reçu<br>⏱ +1 toutes les 30 s d'écoute<br>🎁 Cadeaux quotidiens & coffres</div>"; card.appendChild(earn);
     var spend = document.createElement("div"); spend.style.cssText = "border:1px solid " + C.line + ";border-radius:12px;padding:14px;margin-bottom:16px;background:#1e0030;";
@@ -1850,8 +1856,8 @@ document.addEventListener('DOMContentLoaded', async function() {
     var head = document.createElement("div"); head.style.cssText = "display:flex;align-items:center;gap:12px;margin-bottom:20px;flex-wrap:wrap;";
     var back = document.createElement("button"); back.textContent = "\u2190 Retour"; back.style.cssText = "padding:9px 14px;border-radius:11px;border:1px solid " + C.line + ";background:" + C.bg2 + ";color:" + C.txt + ";font:600 13px Roboto;cursor:pointer;"; back.onclick = function () { scr.remove(); };
     var title = document.createElement("div"); title.textContent = "\uD83D\uDCCA Tableau de bord"; title.style.cssText = "font:800 22px Roboto;flex:1;min-width:140px;";
-    var coins = document.createElement("button"); coins.style.cssText = "padding:9px 14px;border-radius:20px;border:1px solid #FFB02266;background:#FF772318;color:" + C.orange + ";font:700 14px Roboto;cursor:pointer;"; coins.textContent = "\uD83E\uDE99 …"; coins.onclick = function () { openCoinsInfo(); };
-    cWallet(function (co) { coins.textContent = "\uD83E\uDE99 " + coinFmt(co); });
+    var coins = document.createElement("button"); coins.style.cssText = "padding:9px 14px;border-radius:20px;border:1px solid #FFB02266;background:#FF772318;color:" + C.orange + ";font:700 14px Roboto;cursor:pointer;"; coins.innerHTML = coinIco(15) + " …"; coins.onclick = function () { openCoinsInfo(); };
+    cWallet(function (co) { coins.innerHTML = coinIco(15) + " " + coinFmt(co); });
     head.appendChild(back); head.appendChild(title); head.appendChild(coins); inner.appendChild(head);
     var info = document.createElement("div"); info.style.cssText = "font-size:13px;color:" + C.sub + ";margin-bottom:16px;"; info.textContent = "Chargement…"; inner.appendChild(info);
     document.body.appendChild(scr);
@@ -2541,7 +2547,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         box.style.borderColor = C.line; box.innerHTML = '<div style="font-size:42px;">\u26A0\uFE0F</div><div style="color:' + C.sub + ';margin-top:10px;font-size:13px;">' + (result && result.error === "insufficient" ? "Pas assez de pi\u00E8ces" : "Erreur \u2014 v\u00E9rifie le SQL des coffres") + '</div>';
       } else if (result.type === "coins") {
         box.style.borderColor = C.orange; box.style.boxShadow = "0 0 60px " + C.orange + "66";
-        box.innerHTML = '<div style="font-size:56px;animation:ekiGlowPulse 1.5s ease-in-out infinite;">\uD83E\uDE99</div><div style="font:800 30px Roboto;color:' + C.orange + ';margin-top:4px;">+' + result.coins + '</div><div style="font:600 13px Roboto;color:' + C.sub + ';">pi\u00E8ces</div>';
+        box.innerHTML = '<div style="animation:ekiGlowPulse 1.5s ease-in-out infinite;">' + coinIco(52) + '</div><div style="font:800 30px Roboto;color:' + C.orange + ';margin-top:4px;">+' + result.coins + '</div><div style="font:600 13px Roboto;color:' + C.sub + ';">pi\u00E8ces</div>';
       } else if (result.type === "skin") {
         var sk = skinLookup(result.kind, result.id);
         var kindLabel = result.kind === "seq" ? "de s\u00E9quenceur" : (result.kind === "note" ? "de notes" : (result.kind === "ring" ? "d'anneau de profil" : "de pseudo"));
@@ -2568,19 +2574,19 @@ document.addEventListener('DOMContentLoaded', async function() {
     var intro = document.createElement("div"); intro.style.cssText = "font-size:12px;color:" + C.sub + ";margin-bottom:14px;line-height:1.5;"; intro.textContent = "Ouvre un coffre pour tenter de gagner un skin animé exclusif (rare \u2192 légendaire) ou des pièces. Ces skins ne sont disponibles que dans les coffres."; body.appendChild(intro);
     var balRef = { v: 0 };
     cWallet(function (co) { balRef.v = co; var e = document.getElementById("__eki_boxbal"); if (e) e.textContent = coinFmt(co); });
-    var bl = document.createElement("div"); bl.style.cssText = "font:700 14px Roboto;color:" + C.orange + ";margin-bottom:12px;"; bl.innerHTML = "\uD83E\uDE99 <span id='__eki_boxbal'>\u2026</span> pi\u00E8ces"; body.appendChild(bl);
+    var bl = document.createElement("div"); bl.style.cssText = "font:700 14px Roboto;color:" + C.orange + ";margin-bottom:12px;"; bl.innerHTML = coinIco(14) + " <span id='__eki_boxbal'>\u2026</span> pi\u00E8ces"; body.appendChild(bl);
     var grid = document.createElement("div"); grid.style.cssText = "display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;"; body.appendChild(grid);
     boxesData().forEach(function (b) {
       var card = document.createElement("div"); card.style.cssText = "border:1px solid " + b.color + "55;border-radius:16px;padding:14px;background:linear-gradient(160deg,#1e0030," + b.color + "12);display:flex;flex-direction:column;gap:8px;text-align:center;";
       card.innerHTML = '<div style="display:flex;justify-content:center;align-items:center;height:50px;margin-bottom:2px;">' + crateSmall(b.color) + '</div><div style="font:700 14px Roboto;color:' + C.txt + ';">' + b.name + '</div><div style="font-size:11px;color:' + C.sub + ';min-height:28px;">' + b.desc + '</div>';
       var btn = document.createElement("button"); btn.style.cssText = "margin-top:auto;padding:9px;border-radius:10px;border:none;font:700 12px Roboto;cursor:pointer;background:" + b.color + ";color:#fff;";
-      btn.textContent = isAdmin() ? "Ouvrir (gratuit)" : ("Ouvrir \u00B7 " + b.cost + " \uD83E\uDE99");
+      btn.innerHTML = isAdmin() ? "Ouvrir (gratuit)" : ("Ouvrir \u00B7 " + b.cost + " " + coinIco(13));
       btn.onclick = function () {
         if (!isAdmin() && balRef.v < b.cost) { toast("Pas assez de pi\u00E8ces"); return; }
         btn.disabled = true; btn.textContent = "\u2026";
         cOpenBox(b.box, b.cost, function (res) {
           if (window.__ekiRefreshCoins) window.__ekiRefreshCoins();
-          if (res && res.type === "error") { toast(res.error === "insufficient" ? "Pas assez de pi\u00E8ces" : "Erreur \u2014 v\u00E9rifie le SQL"); btn.disabled = false; btn.textContent = isAdmin() ? "Ouvrir (gratuit)" : ("Ouvrir \u00B7 " + b.cost + " \uD83E\uDE99"); return; }
+          if (res && res.type === "error") { toast(res.error === "insufficient" ? "Pas assez de pi\u00E8ces" : "Erreur \u2014 v\u00E9rifie le SQL"); btn.disabled = false; btn.innerHTML = isAdmin() ? "Ouvrir (gratuit)" : ("Ouvrir \u00B7 " + b.cost + " " + coinIco(13)); return; }
           showReveal(res, function () { if (refresh) refresh(); });
         });
       };
@@ -2622,7 +2628,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         var col = dayColor(p);
         var cell = document.createElement("div"); cell.style.cssText = "border:1px solid " + (st === "now" ? col : C.line) + ";border-radius:13px;padding:10px 6px;text-align:center;background:" + (st === "now" ? ("linear-gradient(160deg,#1e0030," + col + "22)") : "#190026") + ";opacity:" + (st === "lock" ? ".55" : "1") + ";" + (isSuper ? "grid-column:span 1;" : "");
         var top = document.createElement("div"); top.style.cssText = "font-size:10px;letter-spacing:1px;color:" + (isSuper ? "#FF9D00" : C.sub) + ";font-weight:700;margin-bottom:5px;"; top.textContent = isSuper ? "JOUR 7" : ("JOUR " + day); cell.appendChild(top);
-        var ic = document.createElement("div"); ic.style.cssText = "height:44px;display:flex;align-items:center;justify-content:center;margin-bottom:5px;" + (st === "done" ? "filter:grayscale(.55);opacity:.85;" : ""); if (p.kind === "coins") { ic.innerHTML = '<span style="font-size:26px;">🪙</span>'; } else { ic.innerHTML = crateSmall(col); } cell.appendChild(ic);
+        var ic = document.createElement("div"); ic.style.cssText = "height:44px;display:flex;align-items:center;justify-content:center;margin-bottom:5px;" + (st === "done" ? "filter:grayscale(.55);opacity:.85;" : ""); if (p.kind === "coins") { ic.innerHTML = coinIco(26); } else { ic.innerHTML = crateSmall(col); } cell.appendChild(ic);
         var lbl = document.createElement("div"); lbl.style.cssText = "font-size:10px;color:" + C.sub + ";min-height:24px;"; lbl.textContent = p.kind === "coins" ? (p.coins + " pi\u00E8ces") : (p.label || (boxMeta(p.box).name)); cell.appendChild(lbl);
         if (st === "done") { var d = document.createElement("div"); d.style.cssText = "font-size:12px;color:" + C.green + ";font-weight:700;margin-top:4px;"; d.textContent = "\u2713 Re\u00E7u"; cell.appendChild(d); }
         else if (st === "now") {
@@ -2752,7 +2758,7 @@ document.addEventListener('DOMContentLoaded', async function() {
   function confirmBuyPremium(loop) {
     var card = modalShell("\uD83D\uDC8E " + loop.title, 360);
     var p = document.createElement("div"); p.style.cssText = "font-size:13px;color:" + C.sub + ";line-height:1.5;margin-bottom:16px;"; p.textContent = "Débloque « " + loop.title + " » pour " + loop.cost + " pièces. Une fois débloqué, tu peux le charger autant de fois que tu veux."; card.appendChild(p);
-    var go = mkBtn("Débloquer (" + coinFmt(loop.cost) + " \uD83E\uDE99)", "primary");
+    var go = mkBtn("Débloquer (" + coinFmt(loop.cost) + " pièces)", "primary");
     go.onclick = function () { go.disabled = true; go.textContent = "\u2026"; cBuySkin(loop.id, "track", loop.cost, function (res) { if (res === "ok" || res === "owned") { toast("Morceau débloqué \uD83C\uDF89"); if (window.__ekiRefreshCoins) window.__ekiRefreshCoins(); closeModal(); applyPremium(loop); } else if (res === "insufficient") { go.disabled = false; go.textContent = "Débloquer"; toast("Pas assez de pièces"); } else { go.disabled = false; toast("Erreur — vérifie le SQL économie"); } }); };
     card.appendChild(go);
   }
@@ -2760,7 +2766,7 @@ document.addEventListener('DOMContentLoaded', async function() {
 
   var premiumActive = false;
   function premCardHTML(loop, owned) {
-    return '<div style="height:4px;background:' + loop.color + ';"></div><div style="padding:12px 14px;"><div style="display:flex;justify-content:space-between;align-items:center;gap:6px;margin-bottom:4px;"><div style="font-size:14px;font-weight:700;color:#F5F0F2;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + loop.title + '</div><div style="font-size:9px;font-weight:700;letter-spacing:1px;color:#FF9D00;border:1px solid #FF9D0066;border-radius:6px;padding:2px 5px;flex:none;">PREMIUM</div></div><div style="font-size:11px;color:#F5F0F266;margin-bottom:9px;">' + loop.artist + ' \u00B7 ' + loop.bpm + ' BPM</div><div style="font-size:12px;font-weight:700;color:' + (owned ? C.green : C.orange) + ';">' + (owned ? "\u25B6 Jouer" : ("\uD83E\uDE99 " + loop.cost + " pi\u00E8ces")) + '</div></div>';
+    return '<div style="height:4px;background:' + loop.color + ';"></div><div style="padding:12px 14px;"><div style="display:flex;justify-content:space-between;align-items:center;gap:6px;margin-bottom:4px;"><div style="font-size:14px;font-weight:700;color:#F5F0F2;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + loop.title + '</div><div style="font-size:9px;font-weight:700;letter-spacing:1px;color:#FF9D00;border:1px solid #FF9D0066;border-radius:6px;padding:2px 5px;flex:none;">PREMIUM</div></div><div style="font-size:11px;color:#F5F0F266;margin-bottom:9px;">' + loop.artist + ' \u00B7 ' + loop.bpm + ' BPM</div><div style="font-size:12px;font-weight:700;color:' + (owned ? C.green : C.orange) + ';">' + (owned ? "\u25B6 Jouer" : (coinIco(13) + " " + loop.cost + " pi\u00E8ces")) + '</div></div>';
   }
   function renderPremiumCards(g) {
     g.innerHTML = "";
@@ -2819,6 +2825,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     st.textContent =
       "#__eki_sidebar{position:fixed;left:0;top:70px;bottom:86px;z-index:99100;background:#140021;border-right:1px solid #2a0a3a;box-shadow:4px 0 26px #0007;display:flex;flex-direction:column;gap:4px;padding:10px 8px;overflow-y:auto;overflow-x:hidden;transition:width .16s ease;}"
       + "#__eki_sidebar.collapsed{width:58px;}#__eki_sidebar.expanded{width:214px;}"
+      + "body.__eki_fullsb #__eki_sidebar{top:0 !important;bottom:0 !important;}"
       + "#__eki_sidebar .__sbtoggle{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;box-sizing:border-box;height:36px;margin-bottom:6px;border:1px solid #3A1A42;background:#1e0030;color:#F5F0F2aa;border-radius:10px;cursor:pointer;font:600 13px Roboto;white-space:nowrap;overflow:hidden;}"
       + "#__eki_sidebar.collapsed .__sbtoggle .__sblabel{display:none;}"
       + "#__eki_sidebar .__sbitem{display:flex;align-items:center;gap:12px;width:100%;box-sizing:border-box;padding:11px 9px;border:none;background:transparent;color:#F5F0F2cc;cursor:pointer;border-radius:11px;font:600 14px Roboto;white-space:nowrap;overflow:hidden;text-align:left;}"
@@ -2844,7 +2851,8 @@ document.addEventListener('DOMContentLoaded', async function() {
       daily: '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="9.5" width="16" height="10.5" rx="1.5"/><path d="M3.2 9.5h17.6"/><path d="M12 9.5V20"/><path d="M12 9.5C12 7 9.8 5.6 8.6 6.6 7.4 7.6 9 9.5 12 9.5z"/><path d="M12 9.5c0-2.5 2.2-3.9 3.4-2.9 1.2 1-.4 2.9-3.4 2.9z"/></svg>',
       dash: '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M5 20v-7"/><path d="M12 20V5"/><path d="M19 20v-9"/></svg>',
       shop: '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8h12l-1 11.5a1.5 1.5 0 0 1-1.5 1.4H8.5A1.5 1.5 0 0 1 7 19.5z"/><path d="M9 8.5V6.5a3 3 0 0 1 6 0v2"/></svg>',
-      profile: '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><circle cx="12" cy="8.5" r="3.6"/><path d="M5.5 20a6.5 6.5 0 0 1 13 0"/></svg>'
+      profile: '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><circle cx="12" cy="8.5" r="3.6"/><path d="M5.5 20a6.5 6.5 0 0 1 13 0"/></svg>',
+      news: '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4l1.8 4.8L18.5 11l-4.7 1.7L12 18l-1.8-5.3L5.5 11l4.7-2.2z"/><circle cx="18.7" cy="5.3" r="1"/><circle cx="5.3" cy="17" r="1"/></svg>'
     };
     return [
       { id: "studio", icon: I.studio, label: "S\u00E9quenceur", act: function () { var c = window.__ekiComponent; if (c) c.setState({ screen: "studio" }); } },
@@ -2854,12 +2862,14 @@ document.addEventListener('DOMContentLoaded', async function() {
       { id: "daily", icon: I.daily, label: "Cadeaux du jour", act: function () { if (typeof openDailyRewards === "function") openDailyRewards(); }, dot: true },
       { id: "dash", icon: I.dash, label: "Tableau de bord", act: function () { if (typeof openMyPublications === "function") openMyPublications(); } },
       { id: "shop", icon: I.shop, label: "Boutique", act: function () { if (typeof openShop === "function") openShop(); } },
-      { id: "profile", icon: I.profile, label: "Profil", act: function () { if (typeof openProfile === "function") openProfile(); } }
+      { id: "profile", icon: I.profile, label: "Profil", act: function () { if (typeof openProfile === "function") openProfile(); } },
+      { id: "news", icon: I.news, label: "Nouveaut\u00E9s", act: function () { if (typeof openChangelog === "function") openChangelog(); } }
     ];
   }
   function getSbExp() { try { return localStorage.getItem("eki_sb_exp") === "1"; } catch (e) { return false; } }
   function setSbExp(v) { try { localStorage.setItem("eki_sb_exp", v ? "1" : "0"); } catch (e) {} }
   function currentSbId() {
+    if (document.getElementById("__eki_newspage")) return "news";
     if (document.getElementById("__eki_msgpage")) return "messages";
     if (document.getElementById("__eki_dailypage")) return "daily";
     if (document.getElementById("__eki_profilepage")) return "profile";
@@ -2874,6 +2884,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     var exp = getSbExp();
     sb.className = exp ? "expanded" : "collapsed";
     document.body.classList.toggle("__eki_sbx", exp);
+    document.body.classList.toggle("__eki_fullsb", currentSbId() !== "studio");
     var tg = sb.querySelector(".__sbtoggle .__sbarrow"); if (tg) tg.textContent = exp ? "\u2039" : "\u203A";
     var cur = currentSbId();
     var items = sb.querySelectorAll(".__sbitem");
@@ -2894,6 +2905,75 @@ document.addEventListener('DOMContentLoaded', async function() {
     return inner;
   }
   window.__ekiPageShell = pageShell;
+  var CHANGELOG = [
+    { v: "v26", date: "28 juin 2026", title: "En-tête réorganisé & finitions", items: [
+      "Bouton « Publier » repositionné tout à droite de l'en-tête.",
+      "Bouton IA unique qui mémorise et affiche le dernier outil utilisé (Surprends-moi / Améliorer).",
+      "Accès « Communauté » et « Messages » directement depuis l'en-tête.",
+      "Barre latérale en pleine hauteur et au premier plan hors séquenceur (fini la zone vide en haut).",
+      "Nouveau design doré des pièces réutilisé partout (tableau de bord, boutique, cadeaux, premium).",
+      "Cette page « Nouveautés » pour suivre toutes les mises à jour."
+    ] },
+    { v: "v25", date: "27 juin 2026", title: "En-tête repensé", items: [
+      "Profil placé à gauche du logo.",
+      "Pastille dorée « pièces | Boutique ».",
+      "Fenêtre « Publier / Exporter » regroupée (audio et partition conservés en onglets)."
+    ] },
+    { v: "v24", date: "26 juin 2026", title: "Inspecteur à droite & pièces dorées", items: [
+      "Panneau d'inspection déplacé sur le côté droit, sur toute la hauteur.",
+      "Première version de la pastille de pièces dorée.",
+      "La grille démarre plus à gauche pour gagner de la place."
+    ] },
+    { v: "v23", date: "25 juin 2026", title: "Gammes & altérations", items: [
+      "Sélecteur de gamme dans le panneau de piste (libre, majeur, mineur, penta, blues, dorien).",
+      "Dièse / bémol / bécarre note par note.",
+      "Le volume d'une note se reflète sur son opacité."
+    ] },
+    { v: "v22", date: "24 juin 2026", title: "Refonte du séquenceur", items: [
+      "Barre de lecture flottante et arrondie sous la grille.",
+      "Outils curseur, main (déplacement) et gomme.",
+      "Volume et durée réglables note par note.",
+      "Barre d'espace pour lancer / arrêter la lecture."
+    ] },
+    { v: "v21", date: "23 juin 2026", title: "Pages plein écran & cosmétiques", items: [
+      "Messages, Cadeaux du jour et Profil deviennent de vraies pages plein écran.",
+      "Les cosmétiques (bagues d'avatar, styles de pseudo) s'affichent partout."
+    ] },
+    { v: "v20", date: "21 juin 2026", title: "Cosmétiques de profil", items: [
+      "Bagues d'avatar et styles de pseudo, visibles par toute la communauté."
+    ] }
+  ];
+  function openChangelog() {
+    var inner = pageShell("__eki_newspage", "Nouveautés");
+    var intro = document.createElement("div");
+    intro.style.cssText = "color:#F5F0F2aa;font:400 14px Roboto;margin-bottom:20px;line-height:1.5;";
+    intro.textContent = "Toutes les nouveautés d'EkiLoop, de la plus récente à la plus ancienne.";
+    inner.appendChild(intro);
+    CHANGELOG.forEach(function (e) {
+      var card = document.createElement("div");
+      card.style.cssText = "background:#140021;border:1px solid #2a0a3a;border-radius:16px;padding:18px 20px;margin-bottom:14px;";
+      var top = document.createElement("div");
+      top.style.cssText = "display:flex;align-items:center;gap:10px;margin-bottom:2px;flex-wrap:wrap;";
+      var badge = document.createElement("span"); badge.textContent = e.v;
+      badge.style.cssText = "font:700 12px Roboto;letter-spacing:.5px;color:#fff;background:linear-gradient(135deg,#FF7723,#BE09FF);padding:3px 10px;border-radius:8px;";
+      var date = document.createElement("span"); date.textContent = e.date;
+      date.style.cssText = "font:600 12px Roboto;color:#F5F0F266;";
+      top.appendChild(badge); top.appendChild(date); card.appendChild(top);
+      var ttl = document.createElement("div"); ttl.textContent = e.title;
+      ttl.style.cssText = "font:700 16px Roboto;color:#F5F0F2;margin:8px 0 11px;";
+      card.appendChild(ttl);
+      var ul = document.createElement("div");
+      e.items.forEach(function (it) {
+        var li = document.createElement("div");
+        li.style.cssText = "display:flex;gap:9px;align-items:flex-start;color:#F5F0F2cc;font:400 13.5px Roboto;line-height:1.45;margin-bottom:6px;";
+        var ar = document.createElement("span"); ar.textContent = "▸"; ar.style.cssText = "color:#BE09FF;flex:none;margin-top:1px;";
+        var tx = document.createElement("span"); tx.textContent = it;
+        li.appendChild(ar); li.appendChild(tx); ul.appendChild(li);
+      });
+      card.appendChild(ul); inner.appendChild(card);
+    });
+  }
+  window.__ekiOpenChangelog = openChangelog;
   function placeSidebar() {
     var c = window.__ekiComponent;
     var show = window.__ekiAuthed && window.__ekiAuthed() && c && c.state && (c.state.screen === "studio" || c.state.screen === "projects") && window.innerWidth >= 720;
@@ -3363,12 +3443,12 @@ document.addEventListener('DOMContentLoaded', async function() {
   }
 
   function buildHeaderRight() {
-    var wrap = document.createElement("div"); wrap.id = "__eki_hdr_right"; wrap.style.cssText = "display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:flex-end;";
-    wrap.appendChild(buildExportPublishBtn());
+    var wrap = document.createElement("div"); wrap.id = "__eki_hdr_right"; wrap.style.cssText = "display:flex;gap:9px;align-items:center;flex-wrap:nowrap;justify-content:flex-end;";
+    wrap.appendChild(simpleHdrBtn("Populaires", ICN_POP, function () { closeHdrMenus(); var c = window.__ekiComponent; if (c && c.openPopular) c.openPopular(); }));
+    wrap.appendChild(buildIaBtn());
     wrap.appendChild(simpleHdrBtn("Communauté", ICN_COMMU, function () { closeHdrMenus(); if (typeof openFeed === "function") openFeed(); }));
     wrap.appendChild(simpleHdrBtn("Messages", ICN_MSG, function () { closeHdrMenus(); if (typeof openMessenger === "function") openMessenger(); }));
-    wrap.appendChild(buildIaBtn());
-    wrap.appendChild(simpleHdrBtn("Populaires", ICN_POP, function () { closeHdrMenus(); var c = window.__ekiComponent; if (c && c.openPopular) c.openPopular(); }));
+    wrap.appendChild(buildExportPublishBtn());
     return wrap;
   }
 
@@ -3377,9 +3457,11 @@ document.addEventListener('DOMContentLoaded', async function() {
     if (!c || !c.state || c.state.screen !== "studio") return;
     if (!(window.__ekiAuthed && window.__ekiAuthed())) return;
     var header = document.querySelector("header"); if (!header || header.children.length < 2) return;
-    var right = header.lastElementChild, left = header.firstElementChild;
+    var left = null, right = null, kids = header.children;
+    for (var g = 0; g < kids.length; g++) { if ((kids[g].textContent || "").indexOf("EkiLoop") >= 0) left = kids[g]; else right = kids[g]; }
+    if (!right) right = header.lastElementChild;
     if (!right || !left || right === left) return;
-    if (!document.getElementById("__eki_hdr_right")) { right.innerHTML = ""; right.appendChild(buildHeaderRight()); }
+    if (right.children.length !== 1 || !right.firstElementChild || right.firstElementChild.id !== "__eki_hdr_right") { closeHdrMenus(); right.innerHTML = ""; right.appendChild(buildHeaderRight()); }
     // gauche : masquer "Projets" (déjà dans la barre latérale), déplacer "Sauvegarder" après le titre
     var lb = left.querySelectorAll("button"); var saveBtn = null;
     for (var i = 0; i < lb.length; i++) {
