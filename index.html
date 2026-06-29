@@ -1773,6 +1773,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     setTimeout(function () { document.addEventListener("pointerdown", function h(ev) { if (!menu.contains(ev.target) && ev.target.id !== "__eki_aitoggle") { menu.remove(); document.removeEventListener("pointerdown", h); } }); }, 50);
   }
   function placeAiMenu() {
+    var _t = document.getElementById("__eki_aitoggle"); if (_t) _t.remove(); var _m = document.getElementById("__eki_aimenu"); if (_m) _m.remove(); return;
     var c = window.__ekiComponent; if (!c || !c.state || c.state.screen !== "studio") { var ex = document.getElementById("__eki_aimenu"); if (ex) ex.remove(); return; }
     var bs = document.getElementsByTagName("button"), sBtn = null, aBtn = null;
     for (var i = 0; i < bs.length; i++) { var tx = bs[i].textContent.trim(); if (!sBtn && /Surprends/i.test(tx)) sBtn = bs[i]; if (!aBtn && /Am[ée]liorer/i.test(tx) && bs[i].id !== "__eki_aitoggle") aBtn = bs[i]; }
@@ -1969,6 +1970,7 @@ document.addEventListener('DOMContentLoaded', async function() {
   }
 
   function tagToolbarButtons() {
+    return;
     var hdr = document.querySelector(".__eki_studiohdr"); if (!hdr) return;
     var bs = hdr.getElementsByTagName("button");
     for (var i = 0; i < bs.length; i++) {
@@ -3380,7 +3382,8 @@ document.addEventListener('DOMContentLoaded', async function() {
   function setLastAI(id) { try { localStorage.setItem("eki_last_ai", id); } catch (e) {} }
   var AI_TOOLS = [
     { id: "surprise", label: "Surprends-moi", run: function () { var c = window.__ekiComponent; if (c && c.surprise) c.surprise(); } },
-    { id: "improve", label: "Améliorer", run: function () { var c = window.__ekiComponent; if (c && c.improveTrack) c.improveTrack(); } }
+    { id: "improve", label: "Améliorer", run: function () { var c = window.__ekiComponent; if (c && c.improveTrack) c.improveTrack(); } },
+    { id: "impress", label: "Impressionne-moi", run: function () { if (typeof impressMe === "function") impressMe(); } }
   ];
   function aiTool(id) { for (var i = 0; i < AI_TOOLS.length; i++) if (AI_TOOLS[i].id === id) return AI_TOOLS[i]; return AI_TOOLS[0]; }
 
@@ -3411,8 +3414,8 @@ document.addEventListener('DOMContentLoaded', async function() {
     caret.onclick = function (e) {
       e.stopPropagation();
       openHdrMenu(wrap, [
-        { label: "Publier le morceau", icon: ICN_PUB, run: function () { if (typeof openPublishPanel === "function") openPublishPanel(); } },
-        { label: "Exporter (audio · partition)", icon: ICN_DL, run: function () { var c = window.__ekiComponent; if (c && c.openExport) c.openExport(); } }
+        { label: "Exporter l'audio", icon: ICN_DL, run: function () { var c = window.__ekiComponent; if (c && c.openExport) { c.openExport(); c.setState({ exportTab: "audio" }); } } },
+        { label: "Exporter la partition", icon: ICN_DL, run: function () { var c = window.__ekiComponent; if (c && c.openExport) { c.openExport(); c.setState({ exportTab: "partition" }); } } }
       ]);
     };
     wrap.appendChild(main); wrap.appendChild(caret); return wrap;
@@ -3428,8 +3431,9 @@ document.addEventListener('DOMContentLoaded', async function() {
     caret.innerHTML = ICN_CARET; caret.title = "Changer d'outil IA";
     caret.onclick = function (e) {
       e.stopPropagation();
-      openHdrMenu(wrap, AI_TOOLS.map(function (x) {
-        return { label: x.label + (x.id === lastAI() ? "  ✓" : ""), icon: ICN_AI, run: function () { setLastAI(x.id); var ex = document.getElementById("__eki_hdr_right"); if (ex) ex.remove(); reorganizeHeader(); x.run(); } };
+      var others = AI_TOOLS.filter(function (x) { return x.id !== lastAI(); });
+      openHdrMenu(wrap, others.map(function (x) {
+        return { label: x.label, icon: ICN_AI, run: function () { setLastAI(x.id); var ex = document.getElementById("__eki_hdr_right"); if (ex) ex.remove(); reorganizeHeader(); x.run(); } };
       }));
     };
     wrap.appendChild(main); wrap.appendChild(caret); return wrap;
