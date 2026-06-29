@@ -3391,7 +3391,8 @@ document.addEventListener('DOMContentLoaded', async function() {
   function openHdrMenu(anchor, items) {
     closeHdrMenus();
     var menu = document.createElement("div"); menu.className = "__eki_hdrmenu";
-    menu.style.cssText = "position:absolute;top:100%;right:0;margin-top:7px;background:#1a0228;border:1px solid #3A1A42;border-radius:12px;box-shadow:0 14px 34px #000b;padding:6px;z-index:99800;min-width:200px;";
+    var r = anchor.getBoundingClientRect();
+    menu.style.cssText = "position:fixed;top:" + (r.bottom + 7) + "px;right:" + Math.max(8, Math.round(window.innerWidth - r.right)) + "px;background:#1a0228;border:1px solid #3A1A42;border-radius:12px;box-shadow:0 14px 34px #000b;padding:6px;z-index:99800;min-width:210px;";
     items.forEach(function (it) {
       var b = document.createElement("button"); b.style.cssText = "display:flex;align-items:center;gap:10px;width:100%;text-align:left;padding:10px 11px;border:none;background:transparent;color:#F5F0F2cc;font:500 13px Roboto;cursor:pointer;border-radius:8px;";
       b.onmouseenter = function () { b.style.background = "#2a0a3a"; b.style.color = "#fff"; };
@@ -3400,7 +3401,7 @@ document.addEventListener('DOMContentLoaded', async function() {
       b.onclick = function (e) { e.stopPropagation(); closeHdrMenus(); it.run(); };
       menu.appendChild(b);
     });
-    anchor.appendChild(menu);
+    document.body.appendChild(menu);
     setTimeout(function () { document.addEventListener("mousedown", function _h(ev) { if (!menu.contains(ev.target)) { menu.remove(); document.removeEventListener("mousedown", _h); } }); }, 0);
   }
 
