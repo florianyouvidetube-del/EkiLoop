@@ -1203,32 +1203,45 @@ document.addEventListener('DOMContentLoaded', async function() {
   // ---- tuto d'accueil personnalisé (pop-up qui se place à côté de l'action) ----
   function findBtn(txt) { var bs = document.getElementsByTagName("button"); for (var i = 0; i < bs.length; i++) { if (bs[i].offsetParent !== null && bs[i].textContent.indexOf(txt) >= 0) return bs[i]; } return null; }
   function studioAnchor() { return document.querySelector("[data-grid-scroll]") || document.querySelector("[data-screen-label]") || document.body; }
+  function tutGrid() { return document.querySelector("[data-grid-scroll]"); }
+  function tutSeqbar() { return document.getElementById("__eki_seqbar"); }
+  function tutInspector() { return document.getElementById("__eki_inspector") || document.getElementById("__eki_inspreopen"); }
+  function tutCoins() { return document.getElementById("__eki_coinbar"); }
+  function tutSidebar() { return document.getElementById("__eki_sidebar"); }
+  function tutIa() { var r = document.getElementById("__eki_hdr_right"); if (!r) return null; var ws = r.querySelectorAll(":scope > div"); for (var i = 0; i < ws.length; i++) { if (/Surprends|Améliorer|Impressionne/.test(ws[i].textContent)) return ws[i]; } return null; }
+  function tutPublier() { var r = document.getElementById("__eki_hdr_right"); if (!r) return null; var last = r.lastElementChild; return (last && /Publier/.test(last.textContent)) ? last : null; }
   var TUT_STEPS = [
-    { sel: function () { return studioAnchor(); }, title: "Compose ta mélodie \uD83C\uDFB5", desc: "Clique sur les cases de la grille pour poser tes notes. Chaque ligne est une hauteur différente.", action: false },
-    { sel: function () { return findBtn("Améliorer"); }, title: "Améliorer \u2728", desc: "« Améliorer » enrichit tes accords et ajoute des nuances automatiquement.", action: false },
-    { sel: function () { return findBtn("Surprends"); }, title: "Surprends-moi \u2728", desc: "Pour finir, clique sur « Surprends-moi » : ça génère une base complète et lance la musique !", action: true }
+    { sel: tutGrid, title: "Bienvenue sur EkiLoop \uD83C\uDFB5", desc: "Compose en cliquant sur la grille : chaque colonne est un temps, chaque ligne une note. Clique-glisse pour peindre plusieurs cases d'un coup." },
+    { sel: tutSeqbar, title: "La barre de lecture \u25B6", desc: "Le gros bouton lance et arrête la musique \u2014 ou appuie sur Espace. À côté, trois outils : le curseur dessine, la main déplace la vue, la gomme efface." },
+    { sel: tutInspector, title: "Le panneau de réglages", desc: "À droite : l'instrument, le volume, les effets, le tempo et la gamme de ta piste. Clique sur une note déjà posée pour régler son volume et sa durée à elle seule." },
+    { sel: tutIa, title: "Laisse l'IA t'aider \u2728", desc: "Le bouton IA donne trois coups de pouce : Surprends-moi génère une base, Améliorer harmonise ta piste, Impressionne-moi crée une mélodie sur toutes les pistes." },
+    { sel: tutCoins, title: "Tes pièces \uD83E\uDE99", desc: "Publie tes morceaux et récolte des likes pour gagner des pièces, puis dépense-les dans la Boutique en habillages de séquenceur et de notes." },
+    { sel: tutSidebar, title: "Navigue à gauche", desc: "La barre latérale t'emmène partout : tes projets, la communauté, tes messages, les cadeaux du jour, la boutique et les nouveautés." },
+    { sel: tutPublier, title: "Publie ton morceau \uD83D\uDE80", desc: "Quand ta boucle te plaît, clique sur Publier pour la partager avec la communauté. La flèche juste à côté exporte aussi l'audio ou la partition. À toi de jouer !", last: true }
   ];
   var _tut = { running: false, i: 0, dom: null, onTarget: null };
   function tutDone() {
-    try { localStorage.setItem("eki_tut_v2", "1"); } catch (e) {}
+    try { localStorage.setItem("eki_tut_v3", "1"); } catch (e) {}
     if (_tut.dom && _tut.dom.ov) _tut.dom.ov.remove();
     _tut.dom = null; _tut.running = false;
     window.removeEventListener("resize", tutReposition);
   }
   function buildTutDom() {
-    var ov = document.createElement("div"); ov.id = "__eki_tut"; ov.style.cssText = "position:fixed;inset:0;z-index:92;pointer-events:none;";
+    var ov = document.createElement("div"); ov.id = "__eki_tut"; ov.style.cssText = "position:fixed;inset:0;z-index:99300;pointer-events:none;";
     var ring = document.createElement("div"); ring.style.cssText = "position:absolute;border:2px solid " + C.pink + ";border-radius:12px;box-shadow:0 0 0 9999px rgba(0,0,0,.55),0 0 18px " + C.pink + ";transition:all .25s ease;pointer-events:none;";
     var card = document.createElement("div"); card.style.cssText = "position:absolute;width:280px;max-width:86vw;background:#1a0228;border:1px solid " + C.pink + "55;border-radius:16px;padding:16px 18px;box-shadow:0 20px 60px #000a;pointer-events:auto;transition:top .25s ease,left .25s ease;";
     ov.appendChild(ring); ov.appendChild(card); document.body.appendChild(ov);
     return { ov: ov, ring: ring, card: card };
   }
   function positionCard(card, el) {
-    var cw = card.offsetWidth || 280, ch = card.offsetHeight || 150, vw = window.innerWidth, vh = window.innerHeight, gap = 14, top, left;
-    if (el) {
-      var r = el.getBoundingClientRect();
-      if (r.bottom + gap + ch < vh) top = r.bottom + gap; else if (r.top - gap - ch > 0) top = r.top - gap - ch; else top = Math.max(10, (vh - ch) / 2);
-      left = r.left + r.width / 2 - cw / 2;
-    } else { top = (vh - ch) / 2; left = (vw - cw) / 2; }
+    var cw = card.offsetWidth || 290, ch = card.offsetHeight || 165, vw = window.innerWidth, vh = window.innerHeight, gap = 16, top, left;
+    if (!el || !el.getBoundingClientRect) { card.style.top = Math.max(10, (vh - ch) / 2) + "px"; card.style.left = ((vw - cw) / 2) + "px"; return; }
+    var r = el.getBoundingClientRect();
+    if (vh - r.bottom >= ch + gap) { top = r.bottom + gap; left = r.left + r.width / 2 - cw / 2; }
+    else if (r.top >= ch + gap) { top = r.top - gap - ch; left = r.left + r.width / 2 - cw / 2; }
+    else if (r.left >= cw + gap) { left = r.left - gap - cw; top = r.top + r.height / 2 - ch / 2; }
+    else if (vw - r.right >= cw + gap) { left = r.right + gap; top = r.top + r.height / 2 - ch / 2; }
+    else { top = (vh - ch) / 2; left = (vw - cw) / 2; }
     card.style.top = Math.max(10, Math.min(top, vh - ch - 10)) + "px";
     card.style.left = Math.max(10, Math.min(left, vw - cw - 10)) + "px";
   }
@@ -1240,6 +1253,9 @@ document.addEventListener('DOMContentLoaded', async function() {
     positionCard(_tut.dom.card, el);
   }
   function tutRender() {
+    var _g = 0;
+    while (_tut.i < TUT_STEPS.length && _g++ < TUT_STEPS.length + 1) { if (TUT_STEPS[_tut.i].sel()) break; _tut.i++; }
+    if (_tut.i >= TUT_STEPS.length) { tutDone(); return; }
     var s = TUT_STEPS[_tut.i], el = s.sel(), card = _tut.dom.card;
     if (_tut.onTarget && _tut.onTarget.el) { try { _tut.onTarget.el.removeEventListener("click", _tut.onTarget.fn); } catch (e) {} _tut.onTarget = null; }
     card.innerHTML = "";
@@ -1256,7 +1272,7 @@ document.addEventListener('DOMContentLoaded', async function() {
       var hint = document.createElement("div"); hint.textContent = "\uD83D\uDC46 à toi de jouer"; hint.style.cssText = "font-size:12px;color:" + C.orange + ";font-weight:600;"; foot.appendChild(hint);
       if (el) { var fn = function () { setTimeout(tutDone, 50); }; el.addEventListener("click", fn, { once: true }); _tut.onTarget = { el: el, fn: fn }; }
     } else {
-      var nb = document.createElement("button"); nb.textContent = "Suivant"; nb.style.cssText = "padding:7px 16px;border-radius:10px;border:none;background:linear-gradient(135deg," + C.orange + "," + C.pink + ");color:#fff;font:600 13px Roboto;cursor:pointer;";
+      var nb = document.createElement("button"); nb.textContent = (_tut.i >= TUT_STEPS.length - 1) ? "C'est parti !" : "Suivant"; nb.style.cssText = "padding:7px 16px;border-radius:10px;border:none;background:linear-gradient(135deg," + C.orange + "," + C.pink + ");color:#fff;font:600 13px Roboto;cursor:pointer;";
       nb.onclick = function () { _tut.i++; if (_tut.i >= TUT_STEPS.length) tutDone(); else tutRender(); };
       foot.appendChild(nb);
     }
@@ -1266,14 +1282,14 @@ document.addEventListener('DOMContentLoaded', async function() {
   function tutorialEnsure() {
     if (_tut.running) return;
     var c = window.__ekiComponent; if (!c || !c.state || c.state.screen !== "studio") return;
-    var seen = false; try { seen = !!localStorage.getItem("eki_tut_v2"); } catch (e) {}
+    var seen = false; try { seen = !!localStorage.getItem("eki_tut_v3"); } catch (e) {}
     if (seen) return;
-    if (!document.querySelector("[data-grid-scroll]")) return; // attend que le séquenceur soit rendu
+    if (!document.querySelector("[data-grid-scroll]") || !document.getElementById("__eki_seqbar")) return; // attend que le séquenceur et sa barre soient prêts
     _tut.running = true; _tut.i = 0; _tut.dom = buildTutDom();
     window.addEventListener("resize", tutReposition);
     tutRender();
   }
-  window.__ekiResetTutorial = function () { try { localStorage.removeItem("eki_tut_v2"); } catch (e) {} };
+  window.__ekiResetTutorial = function () { try { localStorage.removeItem("eki_tut_v3"); } catch (e) {} };
 
   /* ==================  ÉCONOMIE — partie 1 (data + skins)  ================== */
   function cWallet(cb) { if (!dbReady()) { cb(0); return; } getClient().then(function (sb) { return sb.from("eki_wallet").select("coins").eq("user_id", window.__ekiUserId).maybeSingle(); }).then(function (r) { cb(r && r.data ? Number(r.data.coins || 0) : 0); }, function () { cb(0); }); }
