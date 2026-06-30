@@ -4161,11 +4161,42 @@ document.addEventListener('DOMContentLoaded', async function() {
   if (!window.__ekiVoixPhStarted) { window.__ekiVoixPhStarted = true; requestAnimationFrame(voixPhLoop); }
 
   // ============ comm18 : publicit\u00e9s pour les comptes non-Pro ============
-  // Pour brancher un VRAI r\u00e9seau (ex. Google AdSense) : d\u00e9finis avant le chargement
-  //   window.__ekiAdProvider = function(box){ box.innerHTML = '<ins class="adsbygoogle" data-ad-client="ca-pub-XXX" data-ad-slot="123"></ins>'; (adsbygoogle=window.adsbygoogle||[]).push({}); };
-  // (et ajoute le <script> AdSense dans la page). Sans \u00e7a, des pubs maison (promo Pro) s'affichent.
+  // Google AdSense est branch\u00e9 (ADSENSE_CLIENT/ADSENSE_SLOT ci-dessous). Le loader AdSense est inject\u00e9
+  // automatiquement pour les visiteurs NON-Pro (les membres Pro n'ont aucune pub).
+  //  - Annonces automatiques : active-les dans ton tableau de bord AdSense, elles s'affichent seules.
+  //  - Pub r\u00e9elle dans la banni\u00e8re : renseigne ADSENSE_SLOT. Sans slot, des pubs maison (promo Pro) tournent.
   function _adC() { var c = window.__ekiComponent; return (c && c.state) ? c : null; }
   function _adIsPro() { return !!(window.__ekiIsPro && window.__ekiIsPro()); }
+
+  var ADSENSE_CLIENT = "ca-pub-2751484005899525";
+  var ADSENSE_SLOT = "";  // colle ici le data-ad-slot d'un bloc "Display" AdSense pour une vraie pub dans la banni\u00e8re
+  function adsenseActive() { return !!(ADSENSE_CLIENT && ADSENSE_SLOT); }
+  function ensureAdSense() {
+    if (window.__ekiAdsenseInjected || !ADSENSE_CLIENT) return;
+    if (location.hostname === "localhost" || location.hostname === "127.0.0.1" || location.protocol === "file:") return;
+    window.__ekiAdsenseInjected = true;
+    try {
+      var sc = document.createElement("script");
+      sc.async = true;
+      sc.src = "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=" + ADSENSE_CLIENT;
+      sc.crossOrigin = "anonymous";
+      (document.head || document.documentElement).appendChild(sc);
+    } catch (e) {}
+  }
+  function renderAdsense(box) {
+    box.style.cursor = "default"; box.onclick = null;
+    if (box.querySelector("ins.adsbygoogle")) return;
+    box.innerHTML = "";
+    var ins = document.createElement("ins");
+    ins.className = "adsbygoogle";
+    ins.style.cssText = "display:block;width:100%;height:52px;";
+    ins.setAttribute("data-ad-client", ADSENSE_CLIENT);
+    ins.setAttribute("data-ad-slot", ADSENSE_SLOT);
+    ins.setAttribute("data-ad-format", "horizontal");
+    ins.setAttribute("data-full-width-responsive", "true");
+    box.appendChild(ins);
+    try { (window.adsbygoogle = window.adsbygoogle || []).push({}); } catch (e) {}
+  }
 
   var AD_CREATIVES = [
     { ico: "\u2728", t: "Passe en EkiLoop Pro", s: "IA illimit\u00e9e \u00b7 tous les skins \u00b7 z\u00e9ro pub", c1: "#FF7723", c2: "#BE09FF" },
@@ -4177,6 +4208,7 @@ document.addEventListener('DOMContentLoaded', async function() {
 
   function paintCreative(box) {
     if (typeof window.__ekiAdProvider === "function") { try { box.innerHTML = ""; window.__ekiAdProvider(box); return; } catch (e) {} }
+    if (adsenseActive()) { renderAdsense(box); return; }
     var a = AD_CREATIVES[_adIdx % AD_CREATIVES.length];
     box.innerHTML = "";
     box.style.cursor = "pointer";
@@ -4222,6 +4254,7 @@ document.addEventListener('DOMContentLoaded', async function() {
 
   function adTick() {
     var c = _adC();
+    if (c && !_adIsPro()) ensureAdSense();
     var sc = c ? c.state.screen : null;
     var show = !!c && !_adIsPro() && (sc === "studio" || sc === "home");
     var b = document.getElementById("__eki_ad");
