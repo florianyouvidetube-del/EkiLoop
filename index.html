@@ -1050,7 +1050,7 @@ document.addEventListener('DOMContentLoaded', async function() {
   }
 
   // ---- boot communauté ----
-  function commTick() { try { ensureMobileCSS(); tagMobileTargets(); tagToolbarButtons(); placeHeaderButtons(); placeProjectsButton(); placeCoinShop(); placeAiMenu(); placeBurger(); placeMessagesBtn(); placePremiumTracks(); if (typeof placeSidebar === "function") placeSidebar(); if (typeof wireSmoothResize === "function") wireSmoothResize(); if (typeof placeSeqUI === "function") placeSeqUI(); if (typeof reorganizeHeader === "function") reorganizeHeader(); if (typeof hideTopProjets === "function") hideTopProjets(); if (typeof applyCosmetics === "function") applyCosmetics(); wireParamsGear(); attachInstrumentGuard(); attachGridWheelFix(); ensureHScroll(); scheduleResponsive(); wireResponsiveResize(); tagDnD(); studioTimerCheck(); suppressAppTutorial(); tickerEnsure(); tutorialEnsure(); applySkins(); if (typeof placeProButton === "function") placeProButton(); if (typeof proNudge === "function") proNudge(); } catch (e) {} }
+  function commTick() { try { ensureMobileCSS(); tagMobileTargets(); tagToolbarButtons(); placeHeaderButtons(); placeProjectsButton(); placeCoinShop(); placeAiMenu(); placeBurger(); placeMessagesBtn(); placePremiumTracks(); if (typeof placeSidebar === "function") placeSidebar(); if (typeof wireSmoothResize === "function") wireSmoothResize(); if (typeof placeSeqUI === "function") placeSeqUI(); if (typeof reorganizeHeader === "function") reorganizeHeader(); if (typeof hideTopProjets === "function") hideTopProjets(); if (typeof applyCosmetics === "function") applyCosmetics(); wireParamsGear(); attachInstrumentGuard(); attachGridWheelFix(); ensureHScroll(); scheduleResponsive(); wireResponsiveResize(); tagDnD(); studioTimerCheck(); suppressAppTutorial(); tickerEnsure(); tutorialEnsure(); applySkins(); if (typeof placeProButton === "function") placeProButton(); if (typeof proNudge === "function") proNudge(); if (window.__ekiVoicePatchTick) window.__ekiVoicePatchTick(); } catch (e) {} }
   function commBoot() {
     initDnD();
     try { var mo = new MutationObserver(function () { clearTimeout(window.__ekiCommT); window.__ekiCommT = setTimeout(commTick, 180); }); mo.observe(document.body, { childList: true, subtree: true }); } catch (e) {}
@@ -3267,18 +3267,22 @@ document.addEventListener('DOMContentLoaded', async function() {
     // instrument
     var f0 = fld("Instrument");
     var sel = document.createElement("select");
-    var INS = [["piano", "🎹 Piano"], ["guitare", "🎸 Guitare"], ["basse", "🎵 Basse"], ["violon", "🎻 Violon"], ["flute", "🪈 Flûte"], ["trompette", "🎺 Trompette"], ["batterie", "🥁 Batterie"], ["synth", "🎛️ Synthé"], ["perc", "🪘 Perc"], ["808", "⚡ 808"], ["voix", "🎤 Voix"]];
-    INS.forEach(function (o) { var op = document.createElement("option"); op.value = o[0]; var lk = window.__ekiInstrLocked && window.__ekiInstrLocked(o[0]); op.textContent = o[1] + (lk ? "  \uD83D\uDD12 Pro" : ""); if (t.instrument === o[0]) op.selected = true; sel.appendChild(op); });
-    sel.onchange = function () { if (window.__ekiInstrLocked && window.__ekiInstrLocked(sel.value)) { sel.value = t.instrument; if (window.__ekiOpenPro) window.__ekiOpenPro(); return; } if (comp.changeInstrument) comp.changeInstrument({ target: { value: sel.value } }); };
+    var INS = [["piano", "🎹 Piano"], ["guitare", "🎸 Guitare"], ["basse", "🎵 Basse"], ["violon", "🎻 Violon"], ["flute", "🪈 Flûte"], ["trompette", "🎺 Trompette"], ["batterie", "🥁 Batterie"], ["synth", "🎛️ Synthé"], ["perc", "🪘 Perc"], ["808", "⚡ 808"], ["v_bruitage", "🔊 Bruitages"], ["v_voix", "🎤 Voix"]];
+    INS.forEach(function (o) { var op = document.createElement("option"); op.value = o[0]; var lk = window.__ekiInstrLocked && window.__ekiInstrLocked(o[0]); op.textContent = o[1] + (lk ? "  \uD83D\uDD12 Pro" : ""); var seld = (o[0] === "v_bruitage") ? (t.instrument === "voix" && t.voiceMode !== "paroles") : (o[0] === "v_voix") ? (t.instrument === "voix" && t.voiceMode === "paroles") : (t.instrument === o[0]); if (seld) op.selected = true; sel.appendChild(op); });
+    sel.onchange = function () { var v = sel.value; if (v === "v_bruitage" || v === "v_voix") { var mode = (v === "v_voix") ? "paroles" : "bruitage"; if (comp.changeInstrument) comp.changeInstrument({ target: { value: "voix" } }); setTimeout(function () { if (comp.setVoiceMode) comp.setVoiceMode(mode); }, 40); return; } if (window.__ekiInstrLocked && window.__ekiInstrLocked(v)) { sel.value = t.instrument; if (window.__ekiOpenPro) window.__ekiOpenPro(); return; } if (comp.changeInstrument) comp.changeInstrument({ target: { value: v } }); };
     f0.box.appendChild(sel); body.appendChild(f0.box);
 
+    var isVoice = (t.instrument === "voix");
+    if (isVoice && window.__ekiBuildVoicePanel) window.__ekiBuildVoicePanel(body, comp, t);
     var fx = t.fx || {};
     body.appendChild(rangeFld("Volume", Math.round((t.volume == null ? 0.85 : t.volume) * 100) + "%", 0, 100, Math.round((t.volume == null ? 0.85 : t.volume) * 100), 1, function (v, b) { b.textContent = v + "%"; if (comp.setVolume) comp.setVolume(t.id, v / 100); }));
+    if (!isVoice) {
     body.appendChild(rangeFld("Lo-fi (crush)", Math.round((fx.crush || 0) * 100) + "%", 0, 100, Math.round((fx.crush || 0) * 100), 1, function (v, b) { b.textContent = v + "%"; comp.setFx("crush", v / 100); }));
     body.appendChild(rangeFld("Espace (réverb)", Math.round((fx.space || 0) * 100) + "%", 0, 100, Math.round((fx.space || 0) * 100), 1, function (v, b) { b.textContent = v + "%"; comp.setFx("space", v / 100); }));
     body.appendChild(rangeFld("Saturation", Math.round((fx.drive || 0) * 100) + "%", 0, 100, Math.round((fx.drive || 0) * 100), 1, function (v, b) { b.textContent = v + "%"; comp.setFx("drive", v / 100); }));
     var cut = fx.cutoff || 8000;
     body.appendChild(rangeFld("Filtre (ton)", (cut >= 7900 ? "Ouvert" : Math.round(cut) + " Hz"), 300, 8000, cut, 10, function (v, b) { b.textContent = (v >= 7900 ? "Ouvert" : v + " Hz"); comp.setFx("cutoff", v); }));
+    }
     var bpm = (comp.state && comp.state.bpm) || 120;
     body.appendChild(rangeFld("Tempo", bpm + " BPM", 30, 180, bpm, 1, function (v, b) { b.textContent = v + " BPM"; comp.onBpm({ target: { value: v } }); }));
 
@@ -3551,21 +3555,24 @@ document.addEventListener('DOMContentLoaded', async function() {
     wrap.appendChild(main); wrap.appendChild(caret); return wrap;
   }
 
+  function curToolList() { return (window.__ekiIsVoiceTrack && window.__ekiIsVoiceTrack() && window.__ekiVoiceTools && window.__ekiVoiceTools.length) ? window.__ekiVoiceTools : AI_TOOLS; }
+  function curToolById(id) { var L = curToolList(); for (var i = 0; i < L.length; i++) if (L[i].id === id) return L[i]; return L[0]; }
+  function curLast() { var L = curToolList(), last = lastAI(); for (var i = 0; i < L.length; i++) if (L[i].id === last) return last; return L[0].id; }
   function runAiTool(id) {
     if (window.__ekiAiGate && !window.__ekiAiGate(id)) return;
-    var t = aiTool(id); if (t && t.run) t.run();
+    var t = curToolById(id); if (t && t.run) t.run();
   }
   function buildIaBtn() {
-    var t = aiTool(lastAI());
+    var t = curToolById(curLast());
     var wrap = document.createElement("div"); wrap.id = "__eki_ia_btn"; wrap.style.cssText = "position:relative;display:flex;align-items:stretch;border:1px solid #BE09FF;border-radius:12px;overflow:hidden;background:#BE09FF1f;";
     var main = document.createElement("button"); main.style.cssText = "display:flex;align-items:center;gap:7px;padding:9px 13px;border:none;background:transparent;color:#F5F0F2;font:600 13px Roboto;cursor:pointer;white-space:nowrap;";
     main.innerHTML = ICN_AI + '<span>' + t.label + '</span>'; main.title = "Outil IA — " + t.label;
-    main.onclick = function () { runAiTool(lastAI()); };
+    main.onclick = function () { runAiTool(curLast()); };
     var caret = document.createElement("button"); caret.style.cssText = "display:flex;align-items:center;padding:0 8px;border:none;border-left:1px solid #BE09FF55;background:transparent;color:#F5F0F2aa;cursor:pointer;";
     caret.innerHTML = ICN_CARET; caret.title = "Changer d'outil IA";
     caret.onclick = function (e) {
       e.stopPropagation();
-      var others = AI_TOOLS.filter(function (x) { return x.id !== lastAI(); });
+      var others = curToolList().filter(function (x) { return x.id !== curLast(); });
       var items = [];
       if (window.__ekiAiIsPro && window.__ekiAiIsPro()) { items.push({ info: true, label: "Cr\u00E9dits IA : illimit\u00E9 \u2728 (Pro)" }); }
       else { var lft = window.__ekiAiLeft ? window.__ekiAiLeft() : null, lim = window.__ekiAiLimit || 5; items.push({ info: true, label: "Cr\u00E9dits IA aujourd'hui : " + (lft == null ? "" : lft) + "/" + lim + " \u00B7 Pro = illimit\u00E9", pro: true }); }
@@ -3586,7 +3593,7 @@ document.addEventListener('DOMContentLoaded', async function() {
   }
 
   function buildHeaderRight() {
-    var wrap = document.createElement("div"); wrap.id = "__eki_hdr_right"; wrap.style.cssText = "display:flex;gap:9px;align-items:center;flex-wrap:nowrap;justify-content:flex-end;";
+    var wrap = document.createElement("div"); wrap.id = "__eki_hdr_right"; wrap.style.cssText = "display:flex;gap:9px;align-items:center;flex-wrap:nowrap;justify-content:flex-end;"; try { wrap.setAttribute("data-ia", curLast()); } catch (e) {}
     wrap.appendChild(simpleHdrBtn("Populaires", ICN_POP, function () { closeHdrMenus(); var c = window.__ekiComponent; if (c && c.openPopular) c.openPopular(); }));
     wrap.appendChild(buildIaBtn());
     wrap.appendChild(simpleHdrBtn("Communauté", ICN_COMMU, function () { closeHdrMenus(); if (typeof openFeed === "function") openFeed(); }));
@@ -3604,7 +3611,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     for (var g = 0; g < kids.length; g++) { if ((kids[g].textContent || "").indexOf("EkiLoop") >= 0) left = kids[g]; else right = kids[g]; }
     if (!right) right = header.lastElementChild;
     if (!right || !left || right === left) return;
-    if (right.children.length !== 1 || !right.firstElementChild || right.firstElementChild.id !== "__eki_hdr_right") { closeHdrMenus(); right.innerHTML = ""; right.appendChild(buildHeaderRight()); }
+    if (right.children.length !== 1 || !right.firstElementChild || right.firstElementChild.id !== "__eki_hdr_right" || right.firstElementChild.getAttribute("data-ia") !== curLast()) { closeHdrMenus(); right.innerHTML = ""; right.appendChild(buildHeaderRight()); }
     // gauche : masquer "Projets" (déjà dans la barre latérale), déplacer "Sauvegarder" après le titre
     var lb = left.querySelectorAll("button"); var saveBtn = null;
     for (var i = 0; i < lb.length; i++) {
@@ -3812,6 +3819,146 @@ document.addEventListener('DOMContentLoaded', async function() {
     st.textContent = "@keyframes ekiProPulse{0%,100%{box-shadow:0 6px 22px #BE09FF66,0 0 0 1px #ffffff22}50%{box-shadow:0 6px 30px #BE09FFaa,0 0 0 1px #ffffff33}}#__eki_probtn:hover{filter:brightness(1.07)}";
     document.head.appendChild(st);
   })();
+
+  // ============ comm16 : instrument Voix — outils IA voix, garde Pro, réglages ============
+  function _vc() { var c = window.__ekiComponent; if (!c || !c.state) return null; return c; }
+  function isVoiceTrack() { var c = _vc(); var t = c && c.currentTrack && c.currentTrack(); return !!(t && t.instrument === "voix"); }
+  window.__ekiIsVoiceTrack = isVoiceTrack;
+  function voiceMode() { var c = _vc(); var t = c && c.currentTrack && c.currentTrack(); return (t && t.voiceMode === "paroles") ? "paroles" : "bruitage"; }
+  window.__ekiVoiceMode = voiceMode;
+
+  function _vCommit(cur, grid, msg) {
+    var c = _vc(); if (!c) return;
+    var nt = (c.state.tracks || []).map(function (t) { return t.id === cur.id ? Object.assign({}, t, { steps: grid }) : t; });
+    c.setState({ tracks: nt });
+    if (c.engineReady && c.master) { try { c.disposeTrackVoice(cur.id); var ntk = nt.filter(function (t) { return t.id === cur.id; })[0]; if (ntk) c.buildTrackVoice(ntk, c.master); } catch (e) {} }
+    if (typeof toast === "function") toast(msg);
+    if (!c.state.isPlaying && c.togglePlay) c.togglePlay();
+  }
+  function _vCur() { var c = _vc(); var t = c && c.currentTrack && c.currentTrack(); if (!t || t.instrument !== "voix") { if (typeof toast === "function") toast("Sélectionne une piste Voix \uD83C\uDFA4"); return null; } return t; }
+  function _vEmpty(cur) { return cur.steps.map(function (row) { return row.map(function () { return 0; }); }); }
+  function _vChordRows(c, ch, rows) {
+    var cr = c._normalizeChordRows(ch.rows).map(function (x) { return rows - 1 - (typeof x === "number" ? x : x.r); }).filter(function (v) { return v >= 0 && v < rows; }).sort(function (a, b) { return a - b; });
+    return cr.length ? cr : [Math.floor(rows / 2)];
+  }
+
+  // « Autotune » : place la voix sur les notes des accords (elle suit l'harmonie des autres instruments)
+  function voiceAutotune() {
+    var c = _vc(), cur = _vCur(); if (!cur) return;
+    var rows = cur.steps.length, sc = cur.steps[0].length;
+    var mood = (c.state && c.state.mood) || "joyeux";
+    var chords = (c.CHORD_SETS && (c.CHORD_SETS[mood] || c.CHORD_SETS.joyeux)) || null;
+    if (!chords || !chords.length) { if (typeof toast === "function") toast("Indisponible"); return; }
+    var numMeas = Math.max(1, Math.ceil(sc / 4)), prog = [];
+    for (var m = 0; m < numMeas; m++) prog.push(chords[m % chords.length]);
+    var grid = _vEmpty(cur), prev = null;
+    for (var col = 0; col < sc; col += 2) {
+      var crs = _vChordRows(c, prog[Math.floor(col / 4) % prog.length], rows), target;
+      if (prev === null) target = crs[Math.floor(crs.length / 2)];
+      else { var best = crs[0], bd = 99; crs.forEach(function (r) { var d = Math.abs(r - prev); if (d < bd) { bd = d; best = r; } }); target = best; }
+      grid[target][col] = 2; prev = target;
+    }
+    _vCommit(cur, grid, "Autotune \u2728 voix cal\u00E9e sur les accords");
+  }
+  // mélodie vocale : marche d'escalier dans la gamme (lignes = degrés de gamme)
+  function voiceMelody() {
+    var cur = _vCur(); if (!cur) return;
+    var rows = cur.steps.length, sc = cur.steps[0].length, grid = _vEmpty(cur);
+    var curRow = Math.floor(rows / 2);
+    for (var col = 0; col < sc; col += 2) {
+      grid[curRow][col] = 2;
+      var step = [-2, -1, -1, 0, 1, 1, 2][Math.floor(Math.random() * 7)];
+      curRow = Math.max(0, Math.min(rows - 1, curRow + step));
+    }
+    _vCommit(cur, grid, "M\u00E9lodie vocale \u2728 g\u00E9n\u00E9r\u00E9e");
+  }
+  // harmoniser : ajoute une tierce au-dessus de chaque note existante
+  function voiceHarmony() {
+    var cur = _vCur(); if (!cur) return;
+    var rows = cur.steps.length, sc = cur.steps[0].length;
+    var notes = []; for (var r = 0; r < rows; r++) for (var col = 0; col < sc; col++) if (cur.steps[r][col]) notes.push({ r: r, c: col, v: cur.steps[r][col] });
+    if (!notes.length) { if (typeof toast === "function") toast("Pose ou g\u00E9n\u00E8re d'abord une m\u00E9lodie"); return; }
+    var grid = cur.steps.map(function (row) { return row.slice(); });
+    notes.forEach(function (n) { var hr = n.r - 2; if (hr >= 0 && !grid[hr][n.c]) grid[hr][n.c] = 1; });
+    _vCommit(cur, grid, "Harmonie \u2728 voix doubl\u00E9e \u00E0 la tierce");
+  }
+  window.__ekiVoiceTools = [
+    { id: "autotune", label: "Autotune", sub: "cale la voix sur les accords", run: voiceAutotune },
+    { id: "vmelody", label: "M\u00E9lodie vocale", sub: "g\u00E9n\u00E8re une ligne chant\u00E9e", run: voiceMelody },
+    { id: "vharmony", label: "Harmoniser", sub: "double \u00E0 la tierce", run: voiceHarmony }
+  ];
+
+  // masque les onglets Bruitage / Paroles de la barre du haut (mode choisi dans le menu de gauche)
+  function hideVoiceTabs() {
+    try {
+      var btns = document.querySelectorAll("button[title]");
+      for (var i = 0; i < btns.length; i++) {
+        var t = btns[i].getAttribute("title") || "";
+        if (t.indexOf("Chaque note rejoue") === 0 || t.indexOf("Jusqu'\u00E0 3 min") === 0) { var box = btns[i].parentElement; if (box && box.style.display !== "none") box.style.display = "none"; }
+      }
+    } catch (e) {}
+  }
+
+  // patch moteur (sans toucher au template) : import = Pro, enregistrement > 15 s = Pro
+  function voicePatchTick() {
+    var c = window.__ekiComponent; if (!c) { return; }
+    if (!c.__ekiVoicePatched) {
+      c.__ekiVoicePatched = true;
+      if (typeof c.importVoiceFile === "function") {
+        var origImp = c.importVoiceFile.bind(c);
+        c.importVoiceFile = function (trackId, file) {
+          if (!(window.__ekiIsPro && window.__ekiIsPro())) { if (c.toast) c.toast("Fichiers perso : r\u00E9serv\u00E9 \u00E0 EkiLoop Pro \u2728"); if (window.__ekiOpenPro) window.__ekiOpenPro(); return; }
+          return origImp(trackId, file);
+        };
+      }
+      if (typeof c.startVoiceRecording === "function") {
+        var origRec = c.startVoiceRecording.bind(c);
+        c.startVoiceRecording = function (trackId) {
+          var pro = !!(window.__ekiIsPro && window.__ekiIsPro());
+          var r = origRec(trackId);
+          if (!pro) {
+            setTimeout(function () { try { if (c.state.recordingTrack === trackId) c.setState({ recordMax: 15 }); } catch (e) {} }, 400);
+            setTimeout(function () { try { if (c.state.recordingTrack === trackId && c._activeRec && c._activeRec.state === "recording") { c.stopVoiceRecording(); if (c.toast) c.toast("15 s max \u2014 EkiLoop Pro = sans limite \u2728"); } } catch (e) {} }, 15200);
+          }
+          return r;
+        };
+      }
+    }
+    hideVoiceTabs();
+  }
+  window.__ekiVoicePatchTick = voicePatchTick;
+
+  // déclenche un import de fichier (utilisé par le panneau de gauche) — passe par la garde Pro
+  function voiceImportPick(trackId) {
+    if (!(window.__ekiIsPro && window.__ekiIsPro())) { if (typeof toast === "function") toast("Fichiers perso : r\u00E9serv\u00E9 \u00E0 EkiLoop Pro \u2728"); if (window.__ekiOpenPro) window.__ekiOpenPro(); return; }
+    var inp = document.createElement("input"); inp.type = "file"; inp.accept = "audio/*"; inp.style.display = "none";
+    inp.onchange = function () { var c = window.__ekiComponent; if (inp.files && inp.files[0] && c && c.importVoiceFile) c.importVoiceFile(trackId, inp.files[0]); try { document.body.removeChild(inp); } catch (e) {} };
+    document.body.appendChild(inp); inp.click();
+  }
+  window.__ekiVoiceImportPick = voiceImportPick;
+  function buildVoicePanel(body, comp, t) {
+    var box = document.createElement("div"); box.style.cssText = "display:flex;flex-direction:column;gap:8px;margin:2px 0 4px;padding:11px;border:1px solid #BE09FF44;border-radius:12px;background:#1c0530;";
+    var par = (t.voiceMode === "paroles");
+    var lab = document.createElement("div"); lab.style.cssText = "font:700 12px Roboto;color:#F5F0F2;letter-spacing:.5px;"; lab.textContent = par ? "\uD83C\uDFA4 Voix \u2014 chant sur le morceau" : "\uD83D\uDD0A Bruitages \u2014 sons pitch\u00E9s"; box.appendChild(lab);
+    var isRec = !!(comp.state && comp.state.recordingTrack === t.id);
+    var rec = document.createElement("button");
+    rec.textContent = isRec ? ("\u23F9 Arr\u00EAter (" + Math.round((comp.state && comp.state.recordSecs) || 0) + "s)") : "\u23FA Enregistrer";
+    rec.style.cssText = "padding:10px;border:none;border-radius:10px;background:" + (isRec ? "#e0245e" : "linear-gradient(135deg,#FF7723,#BE09FF)") + ";color:#fff;font:700 13px Roboto;cursor:pointer;";
+    rec.onclick = function () { if (isRec) { if (comp.stopVoiceRecording) comp.stopVoiceRecording(); } else { if (comp.startVoiceRecording) comp.startVoiceRecording(t.id); } };
+    box.appendChild(rec);
+    var pro = !!(window.__ekiIsPro && window.__ekiIsPro());
+    var imp = document.createElement("button");
+    imp.textContent = "\uD83D\uDCC2 Importer un fichier" + (pro ? "" : "  \uD83D\uDD12 Pro");
+    imp.style.cssText = "padding:9px;border:1px solid #3A1A42;border-radius:10px;background:#2A1430;color:#F5F0F2cc;font:600 12px Roboto;cursor:pointer;";
+    imp.onclick = function () { if (window.__ekiVoiceImportPick) window.__ekiVoiceImportPick(t.id); };
+    box.appendChild(imp);
+    var hint = document.createElement("div"); hint.style.cssText = "font-size:11px;color:#F5F0F288;line-height:1.5;";
+    hint.innerHTML = par ? "Enregistre ta voix par-dessus le beat, sans la modifier. Le bouton IA propose l'<b>autotune</b> qui cale ta voix sur les accords." : "Chaque note rejoue ton son pitch\u00E9 \u00E0 la hauteur. Parfait pour des bruitages courts.";
+    box.appendChild(hint);
+    if (!pro) { var pp = document.createElement("button"); pp.style.cssText = "text-align:left;padding:0;background:transparent;border:none;font-size:11px;color:#d7a8ff;cursor:pointer;"; pp.textContent = "\u2728 Enregistrement > 15 s + fichiers perso = EkiLoop Pro"; pp.onclick = function () { if (window.__ekiOpenPro) window.__ekiOpenPro(); }; box.appendChild(pp); }
+    body.appendChild(box);
+  }
+  window.__ekiBuildVoicePanel = buildVoicePanel;
 
   // ---------- boot ----------
   var _obsTimer = null;
