@@ -1050,7 +1050,7 @@ document.addEventListener('DOMContentLoaded', async function() {
   }
 
   // ---- boot communauté ----
-  function commTick() { try { ensureMobileCSS(); tagMobileTargets(); tagToolbarButtons(); placeHeaderButtons(); placeProjectsButton(); placeCoinShop(); placeAiMenu(); placeBurger(); placeMessagesBtn(); placePremiumTracks(); if (typeof placeSidebar === "function") placeSidebar(); if (typeof wireSmoothResize === "function") wireSmoothResize(); if (typeof placeSeqUI === "function") placeSeqUI(); if (typeof reorganizeHeader === "function") reorganizeHeader(); if (typeof hideTopProjets === "function") hideTopProjets(); if (typeof applyCosmetics === "function") applyCosmetics(); wireParamsGear(); attachInstrumentGuard(); attachGridWheelFix(); ensureHScroll(); scheduleResponsive(); wireResponsiveResize(); tagDnD(); studioTimerCheck(); suppressAppTutorial(); tickerEnsure(); tutorialEnsure(); applySkins(); } catch (e) {} }
+  function commTick() { try { ensureMobileCSS(); tagMobileTargets(); tagToolbarButtons(); placeHeaderButtons(); placeProjectsButton(); placeCoinShop(); placeAiMenu(); placeBurger(); placeMessagesBtn(); placePremiumTracks(); if (typeof placeSidebar === "function") placeSidebar(); if (typeof wireSmoothResize === "function") wireSmoothResize(); if (typeof placeSeqUI === "function") placeSeqUI(); if (typeof reorganizeHeader === "function") reorganizeHeader(); if (typeof hideTopProjets === "function") hideTopProjets(); if (typeof applyCosmetics === "function") applyCosmetics(); wireParamsGear(); attachInstrumentGuard(); attachGridWheelFix(); ensureHScroll(); scheduleResponsive(); wireResponsiveResize(); tagDnD(); studioTimerCheck(); suppressAppTutorial(); tickerEnsure(); tutorialEnsure(); applySkins(); if (typeof placeProButton === "function") placeProButton(); if (typeof proNudge === "function") proNudge(); } catch (e) {} }
   function commBoot() {
     initDnD();
     try { var mo = new MutationObserver(function () { clearTimeout(window.__ekiCommT); window.__ekiCommT = setTimeout(commTick, 180); }); mo.observe(document.body, { childList: true, subtree: true }); } catch (e) {}
@@ -1336,7 +1336,22 @@ document.addEventListener('DOMContentLoaded', async function() {
       html: '<div class="ern"></div><div class="ern2"></div>' },
     { id: "neongrid", name: "Grille Néon", cost: 160, swatch: "repeating-linear-gradient(0deg,#1B0223 0 6px,#BE09FF44 6px 7px)",
       css: "@keyframes ekiNg{0%,100%{opacity:.5}50%{opacity:.85}}@keyframes ekiNgScan{to{transform:translateY(320%)}}#__eki_skin_layer .eng{position:absolute;inset:0;background-image:repeating-linear-gradient(0deg,rgba(190,9,255,.16) 0 1px,transparent 1px 40px),repeating-linear-gradient(90deg,rgba(0,230,255,.14) 0 1px,transparent 1px 40px);animation:ekiNg 3.5s ease-in-out infinite}#__eki_skin_layer .engs{position:absolute;left:0;right:0;top:0;height:32%;background:linear-gradient(180deg,rgba(0,230,255,.13),transparent);animation:ekiNgScan 4.5s linear infinite}",
-      html: '<div class="eng"></div><div class="engs"></div>' }
+      html: '<div class="eng"></div><div class="engs"></div>' },
+    { id: "theme_light", name: "Thème Clair", eur: 0.99, swatch: "linear-gradient(160deg,#fdf6ff,#ffeede)",
+      css: "#__eki_skin_layer .elt{position:absolute;inset:0;background:linear-gradient(160deg,#fdf6ff,#f3e9ff 45%,#ffeede)}#__eki_skin_layer .elt2{position:absolute;inset:0;background:radial-gradient(circle at 22% 18%,rgba(255,170,110,.18),transparent 45%),radial-gradient(circle at 82% 78%,rgba(160,120,255,.14),transparent 45%)}",
+      html: '<div class="elt"></div><div class="elt2"></div>' },
+    { id: "theme_cat", name: "Thème Chat", eur: 1.49, swatch: "radial-gradient(circle at 50% 80%,#ff8cc8,#2a0322)",
+      css: "@keyframes ekiCatF{0%{transform:translateY(0) rotate(-8deg);opacity:0}12%{opacity:.75}100%{transform:translateY(-106vh) rotate(12deg);opacity:0}}#__eki_skin_layer .ecbg{position:absolute;inset:0;background:radial-gradient(circle at 50% 92%,rgba(255,140,200,.16),transparent 60%)}#__eki_skin_layer .ecat{position:absolute;bottom:-34px;font-size:24px;animation:ekiCatF linear infinite}",
+      html: '<div class="ecbg"></div><div class="ecat" style="left:8%;animation-duration:12s">\uD83D\uDC3E</div><div class="ecat" style="left:22%;animation-duration:15s;animation-delay:2s">\uD83D\uDC31</div><div class="ecat" style="left:40%;animation-duration:11s;animation-delay:1s">\uD83D\uDC3E</div><div class="ecat" style="left:58%;animation-duration:16s;animation-delay:3s">\uD83D\uDE3A</div><div class="ecat" style="left:74%;animation-duration:13s;animation-delay:.6s">\uD83D\uDC3E</div><div class="ecat" style="left:88%;animation-duration:14s;animation-delay:2.5s">\uD83D\uDC31</div>' },
+    { id: "pastel", name: "Pastel Rêve", eur: 0.49, swatch: "linear-gradient(135deg,#ffc3dc,#b4d2ff,#d2ffd2)",
+      css: "@keyframes ekiPastel{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(5%,-4%) scale(1.08)}}#__eki_skin_layer .epa{position:absolute;inset:-22%;background:radial-gradient(circle at 30% 30%,rgba(255,180,220,.32),transparent 42%),radial-gradient(circle at 70% 65%,rgba(180,210,255,.3),transparent 44%),radial-gradient(circle at 50% 86%,rgba(210,255,210,.26),transparent 42%);filter:blur(44px);animation:ekiPastel 14s ease-in-out infinite}",
+      html: '<div class="epa"></div>' },
+    { id: "tokyo", name: "Néon Tokyo", eur: 1.99, swatch: "linear-gradient(0deg,#12001f,#ff008c 70%,#00dcff)",
+      css: "@keyframes ekiTk{0%,100%{opacity:.6}50%{opacity:1}}#__eki_skin_layer .etk{position:absolute;inset:0;background:linear-gradient(0deg,#12001f,transparent 60%),radial-gradient(circle at 20% 82%,rgba(255,0,140,.22),transparent 40%),radial-gradient(circle at 80% 70%,rgba(0,220,255,.18),transparent 42%)}#__eki_skin_layer .etk2{position:absolute;left:0;right:0;bottom:0;height:46%;background-image:repeating-linear-gradient(90deg,rgba(255,0,140,.14) 0 2px,transparent 2px 26px);animation:ekiTk 2.4s ease-in-out infinite}",
+      html: '<div class="etk"></div><div class="etk2"></div>' },
+    { id: "forest", name: "Forêt Enchantée", eur: 0.99, swatch: "linear-gradient(0deg,#0a280f,#1e9c3c)",
+      css: "@keyframes ekiFf{0%{transform:translateY(0);opacity:0}15%{opacity:.9}100%{transform:translateY(-96vh);opacity:0}}#__eki_skin_layer .efo{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 100%,rgba(20,120,40,.3),transparent 60%),linear-gradient(0deg,rgba(10,40,15,.42),transparent 70%)}#__eki_skin_layer .eff{position:absolute;bottom:0;width:4px;height:4px;border-radius:50%;background:#d4ff88;box-shadow:0 0 8px #aaff44;animation:ekiFf linear infinite}",
+      html: '<div class="efo"></div><div class="eff" style="left:14%;animation-duration:9s"></div><div class="eff" style="left:32%;animation-duration:12s;animation-delay:2s"></div><div class="eff" style="left:52%;animation-duration:10s;animation-delay:1s"></div><div class="eff" style="left:70%;animation-duration:13s;animation-delay:3s"></div><div class="eff" style="left:86%;animation-duration:11s;animation-delay:.5s"></div>' }
   ];
   var NOTE_SKINS = [
     { id: "none", name: "Classique", cost: 0, filter: "" },
@@ -1488,6 +1503,10 @@ document.addEventListener('DOMContentLoaded', async function() {
     if (owned) {
       if (isActive) { btn.textContent = "Actif \u2713"; btn.disabled = true; btn.style.cssText = btnCss(C.green, true); }
       else { btn.textContent = "Activer"; btn.style.cssText = btnCss(C.pink, false); btn.onclick = function () { setActive(kind, sk.id); refresh(); }; }
+    } else if (sk.eur) {
+      var fmt = (Number(sk.eur).toFixed(2)).replace(".", ",") + "\u20AC";
+      btn.textContent = isAdmin() ? "Obtenir" : ("Acheter \u00B7 " + fmt); btn.style.cssText = btnCss(C.orange, false);
+      btn.onclick = function () { if (isAdmin()) { if (window.__ekiStartCheckout) window.__ekiStartCheckout(kind, sk.id, sk.eur, refresh); else { setActive(kind, sk.id); refresh(); } } else if (window.__ekiSkinBuyModal) { window.__ekiSkinBuyModal(kind, sk.id, sk.name, sk.eur, refresh); } };
     } else {
       var afford = isAdmin() || balance >= sk.cost;
       btn.textContent = isAdmin() ? "Obtenir" : ("Acheter \uD83D\uDCB0 " + sk.cost); btn.disabled = !afford; btn.style.cssText = btnCss(afford ? C.orange : C.line, !afford);
@@ -1534,9 +1553,9 @@ document.addEventListener('DOMContentLoaded', async function() {
       if (st.tab === "box") { if (window.__ekiRenderBoxes) window.__ekiRenderBoxes(body, function () { refreshData(render); }); return; }
       var kind = st.tab, active = getActive(kind);
       var fullList = kind === "seq" ? SEQ_SKINS : (kind === "note" ? NOTE_SKINS : (kind === "ring" ? window.__ekiRingSkins : window.__ekiNameSkins)) || [];
-      var list = fullList.filter(function (sk) { return !sk.lootOnly || st.owned.indexOf(sk.id) >= 0; });
+      var list = fullList.filter(function (sk) { return (!sk.lootOnly || st.owned.indexOf(sk.id) >= 0) || sk.eur; });
       var grid = document.createElement("div"); grid.style.cssText = "display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:12px;";
-      list.forEach(function (sk) { var owned = (sk.cost === 0) || st.owned.indexOf(sk.id) >= 0; grid.appendChild(skinCard(sk, kind, owned, active, st.balance, function () { refreshData(render); })); });
+      list.forEach(function (sk) { var owned = (sk.cost === 0) || st.owned.indexOf(sk.id) >= 0 || (window.__ekiEurOwned && window.__ekiEurOwned(kind, sk.id)); grid.appendChild(skinCard(sk, kind, owned, active, st.balance, function () { refreshData(render); })); });
       body.appendChild(grid);
       var hint = document.createElement("div"); hint.style.cssText = "font-size:11px;color:" + C.sub + ";margin-top:12px;"; hint.textContent = "Gagne des pièces : +1 par écoute, +3 par like, +1 toutes les 30 s d'écoute de tes morceaux."; body.appendChild(hint);
     }
@@ -2406,10 +2425,10 @@ document.addEventListener('DOMContentLoaded', async function() {
     { id: "vortex", name: "Vortex", cost: -1, lootOnly: true, rarity: "epic", swatch: "conic-gradient(from 0deg,#BE09FF,#FF7723,#00c8ff,#BE09FF)",
       css: "@keyframes ekiVx{to{transform:rotate(360deg)}}#__eki_skin_layer .evx{position:absolute;left:50%;top:50%;width:170vmax;height:170vmax;margin-left:-85vmax;margin-top:-85vmax;background:conic-gradient(from 0deg,rgba(190,9,255,.16),rgba(255,119,35,.12),rgba(0,200,255,.15),rgba(190,9,255,.16));opacity:.5;animation:ekiVx 28s linear infinite}",
       html: '<div class="evx"></div>' },
-    { id: "phoenix", name: "Ph\u00E9nix", cost: -1, lootOnly: true, rarity: "legendary", swatch: "linear-gradient(0deg,#ff2d00,#ffb347)",
+    { id: "phoenix", eur: 1.99, name: "Ph\u00E9nix", cost: -1, lootOnly: true, rarity: "legendary", swatch: "linear-gradient(0deg,#ff2d00,#ffb347)",
       css: "@keyframes ekiPhx{0%,100%{opacity:.6;transform:translateY(0) scale(1)}50%{opacity:1;transform:translateY(-12px) scale(1.05)}}@keyframes ekiPhem{0%{transform:translateY(0);opacity:0}15%{opacity:.95}100%{transform:translateY(-98vh);opacity:0}}#__eki_skin_layer .ephx{position:absolute;left:0;right:0;bottom:0;height:52%;background:radial-gradient(ellipse at 50% 100%,rgba(255,120,0,.5),transparent 60%),linear-gradient(0deg,rgba(255,40,0,.42),transparent 72%);filter:blur(11px);animation:ekiPhx 1.4s ease-in-out infinite}#__eki_skin_layer .epem{position:absolute;bottom:0;width:5px;height:5px;border-radius:50%;background:radial-gradient(circle,#ffd27f,#ff5e00);box-shadow:0 0 8px #ff8a00;animation:ekiPhem linear infinite}",
       html: '<div class="ephx"></div><div class="epem" style="left:16%;animation-duration:6s"></div><div class="epem" style="left:32%;animation-duration:8s;animation-delay:1s"></div><div class="epem" style="left:50%;animation-duration:7s;animation-delay:2s"></div><div class="epem" style="left:67%;animation-duration:9s;animation-delay:.6s"></div><div class="epem" style="left:84%;animation-duration:6.5s;animation-delay:1.8s"></div>' },
-    { id: "diamond", name: "Diamant", cost: -1, lootOnly: true, rarity: "legendary", swatch: "linear-gradient(135deg,#a8e6ff,#ffffff,#d8b4ff)",
+    { id: "diamond", eur: 1.99, name: "Diamant", cost: -1, lootOnly: true, rarity: "legendary", swatch: "linear-gradient(135deg,#a8e6ff,#ffffff,#d8b4ff)",
       css: "@keyframes ekiDmS{0%,100%{opacity:.3}50%{opacity:1}}@keyframes ekiDmH{to{filter:hue-rotate(360deg)}}#__eki_skin_layer .edm{position:absolute;inset:0;background:linear-gradient(115deg,transparent 0 42%,rgba(255,255,255,.2) 48% 52%,transparent 60%),repeating-linear-gradient(60deg,rgba(120,220,255,.06) 0 40px,transparent 40px 80px);animation:ekiDmS 3s ease-in-out infinite,ekiDmH 12s linear infinite}#__eki_skin_layer .eds{position:absolute;width:3px;height:3px;border-radius:50%;background:#fff;box-shadow:0 0 6px #fff,0 0 12px #9be7ff;animation:ekiDmS 2.2s ease-in-out infinite}",
       html: '<div class="edm"></div><div class="eds" style="left:18%;top:24%;animation-delay:.2s"></div><div class="eds" style="left:62%;top:16%;animation-delay:1.1s"></div><div class="eds" style="left:82%;top:52%;animation-delay:.6s"></div><div class="eds" style="left:38%;top:68%;animation-delay:1.6s"></div><div class="eds" style="left:72%;top:80%;animation-delay:.9s"></div>' }
   ];
@@ -2435,14 +2454,14 @@ document.addEventListener('DOMContentLoaded', async function() {
   ,
     { id: "r_sunset", name: "Anneau Coucher de Soleil", cost: 320, rarity: "rare", swatch: "radial-gradient(circle,#ffd0a8,#ff5e8a)", css: ".__eki_av{border-color:#ff7a9a!important;box-shadow:0 0 13px #ff7a9aaa,0 0 22px #ff9d5e66!important;}" },
     { id: "r_emerald", name: "Anneau Émeraude", cost: 520, rarity: "epic", swatch: "radial-gradient(circle,#9affd0,#00b36b)", css: "@keyframes ekiRingEm{0%,100%{box-shadow:0 0 11px #00e08aaa,0 0 20px #00b36b66}50%{box-shadow:0 0 18px #00ffa6,0 0 30px #00e08a88}}.__eki_av{border-color:#00e08a!important;animation:ekiRingEm 1.6s ease-in-out infinite!important;}" },
-    { id: "r_crown", name: "Anneau Royal", cost: 700, rarity: "legendary", swatch: "conic-gradient(from 0deg,#ffe9a8,#ffffff,#ffd700,#ffe9a8)", css: "@keyframes ekiRingCr{0%{box-shadow:0 0 14px #ffd700,0 0 24px #ffffff66}50%{box-shadow:0 0 20px #ffffff,0 0 30px #ffd70088}100%{box-shadow:0 0 14px #ffd700,0 0 24px #ffffff66}}.__eki_av{border-color:#fff3b0!important;animation:ekiRingCr 2.6s ease-in-out infinite!important;}" }
+    { id: "r_crown", eur: 1.99, name: "Anneau Royal", cost: 700, rarity: "legendary", swatch: "conic-gradient(from 0deg,#ffe9a8,#ffffff,#ffd700,#ffe9a8)", css: "@keyframes ekiRingCr{0%{box-shadow:0 0 14px #ffd700,0 0 24px #ffffff66}50%{box-shadow:0 0 20px #ffffff,0 0 30px #ffd70088}100%{box-shadow:0 0 14px #ffd700,0 0 24px #ffffff66}}.__eki_av{border-color:#fff3b0!important;animation:ekiRingCr 2.6s ease-in-out infinite!important;}" }
   ,
     { id: "r_ice", name: "Anneau Givre", cost: -1, lootOnly: true, rarity: "rare", swatch: "radial-gradient(circle,#dff6ff,#5fc8ff)", css: "@keyframes ekiRingIce{0%,100%{box-shadow:0 0 10px #9fe4ffaa,0 0 18px #5fc8ff55}50%{box-shadow:0 0 15px #d0f3ff,0 0 26px #7fd6ff77}}.__eki_av{border-color:#bfeeff!important;animation:ekiRingIce 2.2s ease-in-out infinite!important;}" },
     { id: "r_lava", name: "Anneau Lave", cost: -1, lootOnly: true, rarity: "epic", swatch: "radial-gradient(circle,#ffd08a,#ff3b00)", css: "@keyframes ekiRingLava{0%,100%{box-shadow:0 0 12px #ff5e00cc,0 0 20px #ff2a0066}50%{box-shadow:0 0 20px #ffae00,0 0 32px #ff5e0088}}.__eki_av{border-color:#ff7a1a!important;animation:ekiRingLava 1.3s ease-in-out infinite!important;}" },
-    { id: "r_prisme", name: "Anneau Prisme", cost: -1, lootOnly: true, rarity: "legendary", swatch: "conic-gradient(from 0deg,#ff0066,#ffcc00,#00ff88,#00ccff,#cc00ff,#ff0066)", css: "@keyframes ekiRingPr{to{filter:hue-rotate(360deg)}}.__eki_av{border-color:#ffffff!important;box-shadow:0 0 14px #ff66cc,0 0 24px #66ccff88!important;animation:ekiRingPr 3s linear infinite!important;}" },
-    { id: "r_inferno", name: "Anneau Brasier", cost: 750, rarity: "legendary", swatch: "radial-gradient(circle,#ffe08a,#ff3b00)", css: "@keyframes ekiRingInf{0%{box-shadow:0 0 12px #ff6a00,0 0 22px #ff2d00aa;border-color:#ff8a00}30%{box-shadow:0 0 22px #ffd000,0 0 36px #ff5e00cc;border-color:#ffd24a}60%{box-shadow:0 0 14px #ff3b00,0 0 26px #ff6a00bb;border-color:#ff5e00}100%{box-shadow:0 0 12px #ff6a00,0 0 22px #ff2d00aa;border-color:#ff8a00}}.__eki_av{animation:ekiRingInf .7s ease-in-out infinite!important;border-color:#ff8a00!important;}" },
+    { id: "r_prisme", eur: 1.99, name: "Anneau Prisme", cost: -1, lootOnly: true, rarity: "legendary", swatch: "conic-gradient(from 0deg,#ff0066,#ffcc00,#00ff88,#00ccff,#cc00ff,#ff0066)", css: "@keyframes ekiRingPr{to{filter:hue-rotate(360deg)}}.__eki_av{border-color:#ffffff!important;box-shadow:0 0 14px #ff66cc,0 0 24px #66ccff88!important;animation:ekiRingPr 3s linear infinite!important;}" },
+    { id: "r_inferno", eur: 1.99, name: "Anneau Brasier", cost: 750, rarity: "legendary", swatch: "radial-gradient(circle,#ffe08a,#ff3b00)", css: "@keyframes ekiRingInf{0%{box-shadow:0 0 12px #ff6a00,0 0 22px #ff2d00aa;border-color:#ff8a00}30%{box-shadow:0 0 22px #ffd000,0 0 36px #ff5e00cc;border-color:#ffd24a}60%{box-shadow:0 0 14px #ff3b00,0 0 26px #ff6a00bb;border-color:#ff5e00}100%{box-shadow:0 0 12px #ff6a00,0 0 22px #ff2d00aa;border-color:#ff8a00}}.__eki_av{animation:ekiRingInf .7s ease-in-out infinite!important;border-color:#ff8a00!important;}" },
     { id: "r_volt", name: "Anneau Voltage", cost: 540, rarity: "epic", swatch: "radial-gradient(circle,#d8fbff,#00b4ff)", css: "@keyframes ekiRingVlt{0%,100%{box-shadow:0 0 8px #00e5ff,0 0 16px #00b4ff88;border-color:#7fefff}45%{box-shadow:0 0 18px #ffffff,0 0 30px #00e5ffcc;border-color:#ffffff}55%{box-shadow:0 0 6px #00b4ff;border-color:#39d8ff}}.__eki_av{animation:ekiRingVlt .5s steps(3) infinite!important;border-color:#7fefff!important;}" },
-    { id: "r_spectre", name: "Anneau Spectre", cost: 720, rarity: "legendary", swatch: "conic-gradient(from 0deg,#ff0066,#ffcc00,#00ff88,#00ccff,#cc00ff,#ff0066)", css: "@keyframes ekiRingSp{to{filter:hue-rotate(360deg)}}.__eki_av{border-color:#fff!important;box-shadow:0 0 14px #ff66cc,0 0 26px #66ccff99!important;animation:ekiRingSp 2.4s linear infinite!important;}" },
+    { id: "r_spectre", eur: 1.99, name: "Anneau Spectre", cost: 720, rarity: "legendary", swatch: "conic-gradient(from 0deg,#ff0066,#ffcc00,#00ff88,#00ccff,#cc00ff,#ff0066)", css: "@keyframes ekiRingSp{to{filter:hue-rotate(360deg)}}.__eki_av{border-color:#fff!important;box-shadow:0 0 14px #ff66cc,0 0 26px #66ccff99!important;animation:ekiRingSp 2.4s linear infinite!important;}" },
     { id: "r_venom", name: "Anneau Venin", cost: 300, rarity: "rare", swatch: "radial-gradient(circle,#d6ff8a,#39a300)", css: "@keyframes ekiRingVn{0%,100%{box-shadow:0 0 10px #6cff00aa,0 0 18px #39a30066}50%{box-shadow:0 0 18px #aaff44,0 0 30px #6cff0088}}.__eki_av{border-color:#8cff3a!important;animation:ekiRingVn 1.5s ease-in-out infinite!important;}" }
   ];
   var NAME_SKINS = [
@@ -2455,14 +2474,14 @@ document.addEventListener('DOMContentLoaded', async function() {
   ,
     { id: "n_sky", name: "Pseudo Ciel", cost: 300, rarity: "rare", swatch: "linear-gradient(90deg,#5ad1ff,#3b7bff)", previewStyle: "background:linear-gradient(90deg,#5ad1ff,#3b7bff);-webkit-background-clip:text;background-clip:text;color:transparent", css: ".__eki_myname{background:linear-gradient(90deg,#5ad1ff,#3b7bff)!important;-webkit-background-clip:text!important;background-clip:text!important;color:transparent!important;}" },
     { id: "n_magma", name: "Pseudo Magma", cost: 500, rarity: "epic", swatch: "linear-gradient(90deg,#ffd000,#ff3b00)", previewStyle: "background:linear-gradient(90deg,#ffd000,#ff3b00);-webkit-background-clip:text;background-clip:text;color:transparent", css: ".__eki_myname{background:linear-gradient(90deg,#ffd000,#ff3b00)!important;-webkit-background-clip:text!important;background-clip:text!important;color:transparent!important;}" },
-    { id: "n_galaxy", name: "Pseudo Galaxie", cost: 700, rarity: "legendary", swatch: "linear-gradient(90deg,#b06bff,#3b7bff,#b06bff)", previewStyle: "background:linear-gradient(90deg,#b06bff,#3b7bff,#b06bff);-webkit-background-clip:text;background-clip:text;color:transparent", css: "@keyframes ekiNameGx{to{background-position:200% 0}}.__eki_myname{background:linear-gradient(90deg,#b06bff,#3b7bff,#d0a8ff,#b06bff)!important;background-size:200% auto!important;-webkit-background-clip:text!important;background-clip:text!important;color:transparent!important;animation:ekiNameGx 4s linear infinite;}" }
+    { id: "n_galaxy", eur: 1.99, name: "Pseudo Galaxie", cost: 700, rarity: "legendary", swatch: "linear-gradient(90deg,#b06bff,#3b7bff,#b06bff)", previewStyle: "background:linear-gradient(90deg,#b06bff,#3b7bff,#b06bff);-webkit-background-clip:text;background-clip:text;color:transparent", css: "@keyframes ekiNameGx{to{background-position:200% 0}}.__eki_myname{background:linear-gradient(90deg,#b06bff,#3b7bff,#d0a8ff,#b06bff)!important;background-size:200% auto!important;-webkit-background-clip:text!important;background-clip:text!important;color:transparent!important;animation:ekiNameGx 4s linear infinite;}" }
   ,
     { id: "n_toxic", name: "Pseudo Toxique", cost: -1, lootOnly: true, rarity: "rare", swatch: "linear-gradient(90deg,#a8ff60,#19a300)", previewStyle: "background:linear-gradient(90deg,#a8ff60,#19a300);-webkit-background-clip:text;background-clip:text;color:transparent", css: ".__eki_myname{background:linear-gradient(90deg,#a8ff60,#19a300)!important;-webkit-background-clip:text!important;background-clip:text!important;color:transparent!important;}" },
     { id: "n_chrome", name: "Pseudo Chrome", cost: -1, lootOnly: true, rarity: "epic", swatch: "linear-gradient(90deg,#e8e8e8,#9aa0a8,#ffffff,#9aa0a8)", previewStyle: "background:linear-gradient(90deg,#e8e8e8,#9aa0a8,#ffffff,#9aa0a8);-webkit-background-clip:text;background-clip:text;color:transparent", css: "@keyframes ekiNameCh{to{background-position:200% 0}}.__eki_myname{background:linear-gradient(90deg,#e8e8e8,#9aa0a8,#ffffff,#9aa0a8)!important;background-size:200% auto!important;-webkit-background-clip:text!important;background-clip:text!important;color:transparent!important;animation:ekiNameCh 3s linear infinite;}" },
-    { id: "n_void", name: "Pseudo N\u00E9ant", cost: -1, lootOnly: true, rarity: "legendary", swatch: "linear-gradient(90deg,#b46bff,#3a006e,#b46bff)", previewStyle: "background:linear-gradient(90deg,#b46bff,#3a006e,#b46bff);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 0 6px #7a00ff88", css: "@keyframes ekiNameVd{to{background-position:200% 0}}.__eki_myname{background:linear-gradient(90deg,#b46bff,#3a006e,#d0a8ff,#b46bff)!important;background-size:200% auto!important;-webkit-background-clip:text!important;background-clip:text!important;color:transparent!important;text-shadow:0 0 6px #7a00ff88!important;animation:ekiNameVd 4s linear infinite;}" },
-    { id: "n_brasier", name: "Pseudo Brasier", cost: 750, rarity: "legendary", swatch: "linear-gradient(0deg,#ff2d00,#ffd000)", previewStyle: "background:linear-gradient(0deg,#ff2d00,#ffb347);-webkit-background-clip:text;background-clip:text;color:transparent", css: "@keyframes ekiNameBr{0%,100%{background-position:0% 0%;filter:brightness(1)}50%{background-position:0% 100%;filter:brightness(1.3)}}.__eki_myname{background:linear-gradient(0deg,#ff2d00,#ff7b00,#ffd000,#ff7b00,#ff2d00)!important;background-size:100% 300%!important;-webkit-background-clip:text!important;background-clip:text!important;color:transparent!important;text-shadow:0 0 8px #ff6a0044!important;animation:ekiNameBr 1.1s ease-in-out infinite;}" },
+    { id: "n_void", eur: 1.49, name: "Pseudo N\u00E9ant", cost: -1, lootOnly: true, rarity: "legendary", swatch: "linear-gradient(90deg,#b46bff,#3a006e,#b46bff)", previewStyle: "background:linear-gradient(90deg,#b46bff,#3a006e,#b46bff);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 0 6px #7a00ff88", css: "@keyframes ekiNameVd{to{background-position:200% 0}}.__eki_myname{background:linear-gradient(90deg,#b46bff,#3a006e,#d0a8ff,#b46bff)!important;background-size:200% auto!important;-webkit-background-clip:text!important;background-clip:text!important;color:transparent!important;text-shadow:0 0 6px #7a00ff88!important;animation:ekiNameVd 4s linear infinite;}" },
+    { id: "n_brasier", eur: 1.99, name: "Pseudo Brasier", cost: 750, rarity: "legendary", swatch: "linear-gradient(0deg,#ff2d00,#ffd000)", previewStyle: "background:linear-gradient(0deg,#ff2d00,#ffb347);-webkit-background-clip:text;background-clip:text;color:transparent", css: "@keyframes ekiNameBr{0%,100%{background-position:0% 0%;filter:brightness(1)}50%{background-position:0% 100%;filter:brightness(1.3)}}.__eki_myname{background:linear-gradient(0deg,#ff2d00,#ff7b00,#ffd000,#ff7b00,#ff2d00)!important;background-size:100% 300%!important;-webkit-background-clip:text!important;background-clip:text!important;color:transparent!important;text-shadow:0 0 8px #ff6a0044!important;animation:ekiNameBr 1.1s ease-in-out infinite;}" },
     { id: "n_volt", name: "Pseudo Voltage", cost: 520, rarity: "epic", swatch: "#39d8ff", previewStyle: "color:#39d8ff;text-shadow:0 0 8px #00e5ff88", css: "@keyframes ekiNameVl{0%,100%{color:#39d8ff;text-shadow:0 0 6px #00e5ff,0 0 12px #00b4ff88}48%{color:#ffffff;text-shadow:0 0 10px #fff,0 0 18px #00e5ff}52%{color:#7fefff;text-shadow:0 0 4px #00b4ff}}.__eki_myname{animation:ekiNameVl .45s steps(2) infinite;}" },
-    { id: "n_glitch", name: "Pseudo Glitch", cost: 700, rarity: "legendary", swatch: "linear-gradient(90deg,#ff003c,#00e5ff)", previewStyle: "color:#fff;text-shadow:1.5px 0 #ff003c,-1.5px 0 #00e5ff", css: "@keyframes ekiNameGl{0%,100%{text-shadow:1.5px 0 #ff003c,-1.5px 0 #00e5ff;transform:translateX(0)}25%{text-shadow:-1.5px 0 #ff003c,1.5px 0 #00e5ff}50%{text-shadow:1.5px 0 #00e5ff,-1.5px 0 #ff003c;transform:translateX(.5px)}75%{text-shadow:-1px 0 #ffd000,1px 0 #ff003c;transform:translateX(-.5px)}}.__eki_myname{color:#fff!important;animation:ekiNameGl .35s steps(2,end) infinite;}" },
+    { id: "n_glitch", eur: 1.99, name: "Pseudo Glitch", cost: 700, rarity: "legendary", swatch: "linear-gradient(90deg,#ff003c,#00e5ff)", previewStyle: "color:#fff;text-shadow:1.5px 0 #ff003c,-1.5px 0 #00e5ff", css: "@keyframes ekiNameGl{0%,100%{text-shadow:1.5px 0 #ff003c,-1.5px 0 #00e5ff;transform:translateX(0)}25%{text-shadow:-1.5px 0 #ff003c,1.5px 0 #00e5ff}50%{text-shadow:1.5px 0 #00e5ff,-1.5px 0 #ff003c;transform:translateX(.5px)}75%{text-shadow:-1px 0 #ffd000,1px 0 #ff003c;transform:translateX(-.5px)}}.__eki_myname{color:#fff!important;animation:ekiNameGl .35s steps(2,end) infinite;}" },
     { id: "n_venom", name: "Pseudo Venin", cost: 300, rarity: "rare", swatch: "linear-gradient(90deg,#6cff00,#39a300)", previewStyle: "background:linear-gradient(90deg,#6cff00,#39a300);-webkit-background-clip:text;background-clip:text;color:transparent", css: "@keyframes ekiNameVn{to{background-position:200% 0}}.__eki_myname{background:linear-gradient(90deg,#6cff00,#aaff44,#39a300,#aaff44,#6cff00)!important;background-size:200% auto!important;-webkit-background-clip:text!important;background-clip:text!important;color:transparent!important;text-shadow:0 0 6px #6cff0055!important;animation:ekiNameVn 3s linear infinite;}" }
   ];
   window.__ekiRingSkins = RING_SKINS; window.__ekiNameSkins = NAME_SKINS;
@@ -3249,8 +3268,8 @@ document.addEventListener('DOMContentLoaded', async function() {
     var f0 = fld("Instrument");
     var sel = document.createElement("select");
     var INS = [["piano", "🎹 Piano"], ["guitare", "🎸 Guitare"], ["basse", "🎵 Basse"], ["violon", "🎻 Violon"], ["flute", "🪈 Flûte"], ["trompette", "🎺 Trompette"], ["batterie", "🥁 Batterie"], ["synth", "🎛️ Synthé"], ["perc", "🪘 Perc"], ["808", "⚡ 808"], ["voix", "🎤 Voix"]];
-    INS.forEach(function (o) { var op = document.createElement("option"); op.value = o[0]; op.textContent = o[1]; if (t.instrument === o[0]) op.selected = true; sel.appendChild(op); });
-    sel.onchange = function () { if (comp.changeInstrument) comp.changeInstrument({ target: { value: sel.value } }); };
+    INS.forEach(function (o) { var op = document.createElement("option"); op.value = o[0]; var lk = window.__ekiInstrLocked && window.__ekiInstrLocked(o[0]); op.textContent = o[1] + (lk ? "  \uD83D\uDD12 Pro" : ""); if (t.instrument === o[0]) op.selected = true; sel.appendChild(op); });
+    sel.onchange = function () { if (window.__ekiInstrLocked && window.__ekiInstrLocked(sel.value)) { sel.value = t.instrument; if (window.__ekiOpenPro) window.__ekiOpenPro(); return; } if (comp.changeInstrument) comp.changeInstrument({ target: { value: sel.value } }); };
     f0.box.appendChild(sel); body.appendChild(f0.box);
 
     var fx = t.fx || {};
@@ -3497,6 +3516,13 @@ document.addEventListener('DOMContentLoaded', async function() {
     var r = anchor.getBoundingClientRect();
     menu.style.cssText = "position:fixed;top:" + (r.bottom + 7) + "px;right:" + Math.max(8, Math.round(window.innerWidth - r.right)) + "px;background:#1a0228;border:1px solid #3A1A42;border-radius:12px;box-shadow:0 14px 34px #000b;padding:6px;z-index:99800;min-width:230px;max-height:min(72vh,440px);overflow-y:auto;";
     items.forEach(function (it) {
+      if (it.info) {
+        var d = document.createElement(it.pro ? "button" : "div");
+        d.style.cssText = "display:block;width:100%;box-sizing:border-box;text-align:left;padding:8px 11px 9px;margin-bottom:5px;border:none;border-bottom:1px solid #2a0a3a;background:" + (it.pro ? "#BE09FF14" : "transparent") + ";color:" + (it.pro ? "#d7a8ff" : "#F5F0F288") + ";font:600 11px Roboto;border-radius:" + (it.pro ? "8px" : "0") + ";cursor:" + (it.pro ? "pointer" : "default") + ";";
+        d.textContent = it.label;
+        if (it.pro) d.onclick = function (e) { e.stopPropagation(); closeHdrMenus(); if (window.__ekiOpenPro) window.__ekiOpenPro(); };
+        menu.appendChild(d); return;
+      }
       var b = document.createElement("button"); b.style.cssText = "display:flex;align-items:" + (it.sub ? "flex-start" : "center") + ";gap:10px;width:100%;text-align:left;padding:10px 11px;border:none;background:transparent;color:#F5F0F2cc;font:500 13px Roboto;cursor:pointer;border-radius:8px;";
       b.onmouseenter = function () { b.style.background = "#2a0a3a"; b.style.color = "#fff"; };
       b.onmouseleave = function () { b.style.background = "transparent"; b.style.color = "#F5F0F2cc"; };
@@ -3525,19 +3551,28 @@ document.addEventListener('DOMContentLoaded', async function() {
     wrap.appendChild(main); wrap.appendChild(caret); return wrap;
   }
 
+  function runAiTool(id) {
+    if (window.__ekiAiGate && !window.__ekiAiGate(id)) return;
+    var t = aiTool(id); if (t && t.run) t.run();
+  }
   function buildIaBtn() {
     var t = aiTool(lastAI());
     var wrap = document.createElement("div"); wrap.id = "__eki_ia_btn"; wrap.style.cssText = "position:relative;display:flex;align-items:stretch;border:1px solid #BE09FF;border-radius:12px;overflow:hidden;background:#BE09FF1f;";
     var main = document.createElement("button"); main.style.cssText = "display:flex;align-items:center;gap:7px;padding:9px 13px;border:none;background:transparent;color:#F5F0F2;font:600 13px Roboto;cursor:pointer;white-space:nowrap;";
     main.innerHTML = ICN_AI + '<span>' + t.label + '</span>'; main.title = "Outil IA — " + t.label;
-    main.onclick = function () { aiTool(lastAI()).run(); };
+    main.onclick = function () { runAiTool(lastAI()); };
     var caret = document.createElement("button"); caret.style.cssText = "display:flex;align-items:center;padding:0 8px;border:none;border-left:1px solid #BE09FF55;background:transparent;color:#F5F0F2aa;cursor:pointer;";
     caret.innerHTML = ICN_CARET; caret.title = "Changer d'outil IA";
     caret.onclick = function (e) {
       e.stopPropagation();
       var others = AI_TOOLS.filter(function (x) { return x.id !== lastAI(); });
+      var items = [];
+      if (window.__ekiAiIsPro && window.__ekiAiIsPro()) { items.push({ info: true, label: "Cr\u00E9dits IA : illimit\u00E9 \u2728 (Pro)" }); }
+      else { var lft = window.__ekiAiLeft ? window.__ekiAiLeft() : null, lim = window.__ekiAiLimit || 5; items.push({ info: true, label: "Cr\u00E9dits IA aujourd'hui : " + (lft == null ? "" : lft) + "/" + lim + " \u00B7 Pro = illimit\u00E9", pro: true }); }
+      others.forEach(function (x) { items.push({ label: x.label, sub: x.sub, icon: ICN_AI, run: function () { if (window.__ekiAiGate && !window.__ekiAiGate(x.id)) return; setLastAI(x.id); var ex = document.getElementById("__eki_hdr_right"); if (ex) ex.remove(); reorganizeHeader(); x.run(); } }); });
+      openHdrMenu(wrap, items); return;
       openHdrMenu(wrap, others.map(function (x) {
-        return { label: x.label, sub: x.sub, icon: ICN_AI, run: function () { setLastAI(x.id); var ex = document.getElementById("__eki_hdr_right"); if (ex) ex.remove(); reorganizeHeader(); x.run(); } };
+        return { label: x.label, sub: x.sub, icon: ICN_AI, run: function () { if (window.__ekiAiGate && !window.__ekiAiGate(x.id)) return; setLastAI(x.id); var ex = document.getElementById("__eki_hdr_right"); if (ex) ex.remove(); reorganizeHeader(); x.run(); } };
       }));
     };
     wrap.appendChild(main); wrap.appendChild(caret); return wrap;
@@ -3581,6 +3616,202 @@ document.addEventListener('DOMContentLoaded', async function() {
     if (saveBtn && saveBtn.parentNode === left && left.lastElementChild !== saveBtn) left.appendChild(saveBtn);
   }
   window.__ekiReorganizeHeader = reorganizeHeader;
+
+  // ============ comm15 : monétisation — EkiLoop Pro, limite IA, boutons & pop-ups ============
+  var PRO_PRICE = "4,99\u20AC", PRO_OLD = "16,99\u20AC", AI_LIMIT = 5;
+  var PRO_KEY = "eki_pro", AI_KEY = "eki_ai_credits", EUR_KEY = "eki_eur_owned", NUDGE_KEY = "eki_pro_nudged";
+
+  function isPro() { try { return localStorage.getItem(PRO_KEY) === "1"; } catch (e) { return false; } }
+  function setPro(v) { try { localStorage.setItem(PRO_KEY, v ? "1" : "0"); } catch (e) {} try { if (typeof applySkins === "function") applySkins(true); } catch (e) {} }
+  window.__ekiIsPro = isPro; window.__ekiSetPro = setPro;
+
+  function eur(n) { return (Number(n).toFixed(2)).replace(".", ",") + "\u20AC"; }
+  function todayStr() { var d = new Date(); return d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate(); }
+  function aiUsed() { try { var d = JSON.parse(localStorage.getItem(AI_KEY) || "{}"); return d.date === todayStr() ? (d.n || 0) : 0; } catch (e) { return 0; } }
+  function aiLeft() { return Math.max(0, AI_LIMIT - aiUsed()); }
+  function aiBump() { try { var t = todayStr(); var d = JSON.parse(localStorage.getItem(AI_KEY) || "{}"); var n = (d.date === t ? (d.n || 0) : 0) + 1; localStorage.setItem(AI_KEY, JSON.stringify({ date: t, n: n })); } catch (e) {} }
+  window.__ekiAiLeft = aiLeft; window.__ekiAiLimit = AI_LIMIT; window.__ekiAiUsed = aiUsed; window.__ekiAiIsPro = isPro;
+
+  // jauge affichée dans le menu IA + popup quand la limite est atteinte
+  function aiGate() {
+    if (isPro()) return true;
+    if (aiUsed() >= AI_LIMIT) { openLimitModal(); return false; }
+    aiBump();
+    var left = aiLeft();
+    if (left === 1) { try { if (typeof toast === "function") toast("Dernier cr\u00E9dit IA du jour \u2014 Pro = illimit\u00E9 \u2728"); } catch (e) {} }
+    return true;
+  }
+  window.__ekiAiGate = aiGate;
+
+  // ---- skins payants en euros : possession locale (le paiement r\u00E9el se branche ensuite) ----
+  function eurList() { try { return JSON.parse(localStorage.getItem(EUR_KEY) || "[]"); } catch (e) { return []; } }
+  function eurOwned(kind, id) { return isPro() || eurList().indexOf(kind + ":" + id) >= 0; }
+  function addEurOwned(kind, id) { try { var l = eurList(); var k = kind + ":" + id; if (l.indexOf(k) < 0) { l.push(k); localStorage.setItem(EUR_KEY, JSON.stringify(l)); } } catch (e) {} }
+  window.__ekiEurOwned = eurOwned;
+
+  // paiement (placeholder) — branche Stripe Checkout ici plus tard
+  function startCheckout(kind, id, price, after) {
+    // TODO: remplacer par un vrai paiement (Stripe). Pour l'instant : d\u00E9blocage local.
+    if (kind === "pro") { setPro(true); try { if (typeof toast === "function") toast("\u2728 Bienvenue dans EkiLoop Pro !"); } catch (e) {} }
+    else { addEurOwned(kind, id); try { if (typeof setActive === "function") setActive(kind, id); } catch (e) {} try { if (typeof toast === "function") toast("Skin d\u00E9bloqu\u00E9 \uD83C\uDF89"); } catch (e) {} }
+    try { if (window.__ekiRefreshCoins) window.__ekiRefreshCoins(); } catch (e) {}
+    if (after) try { after(); } catch (e) {}
+  }
+  window.__ekiStartCheckout = startCheckout;
+
+  // ---- briques d'UI ----
+  function closeModals() { var ex = document.querySelectorAll(".__eki_promodal"); for (var i = 0; i < ex.length; i++) ex[i].remove(); }
+  function overlay() {
+    var o = document.createElement("div"); o.className = "__eki_promodal";
+    o.style.cssText = "position:fixed;inset:0;z-index:99750;background:rgba(8,0,14,.74);backdrop-filter:blur(5px);display:flex;align-items:center;justify-content:center;padding:18px;";
+    o.onclick = function (e) { if (e.target === o) o.remove(); };
+    return o;
+  }
+  function card(maxw) {
+    var c = document.createElement("div");
+    c.style.cssText = "width:" + (maxw || 460) + "px;max-width:94vw;max-height:90vh;overflow-y:auto;background:linear-gradient(180deg,#1b0430,#140022);border:1px solid #BE09FF55;border-radius:20px;box-shadow:0 30px 80px #000c,0 0 0 1px #ffffff08;padding:22px 22px 20px;";
+    return c;
+  }
+  function xBtn(o) { var x = document.createElement("button"); x.innerHTML = "\u00D7"; x.style.cssText = "position:absolute;top:13px;right:15px;background:transparent;border:none;color:#F5F0F2aa;font-size:24px;line-height:1;cursor:pointer;"; x.onclick = function () { o.remove(); }; return x; }
+  function proBadgeRow() {
+    var d = document.createElement("div"); d.style.cssText = "display:inline-flex;align-items:center;gap:7px;padding:5px 12px;border-radius:999px;background:linear-gradient(135deg,#FF7723,#BE09FF);color:#fff;font:800 12px Roboto;letter-spacing:.5px;margin-bottom:12px;";
+    d.innerHTML = "\u2728 EKILOOP PRO";
+    return d;
+  }
+  function priceRow() {
+    var p = document.createElement("div"); p.style.cssText = "display:flex;align-items:baseline;gap:10px;margin:2px 0 4px;flex-wrap:wrap;";
+    p.innerHTML = "<span style='font-family:Rubik Glitch,cursive;font-size:34px;background:linear-gradient(135deg,#FF7723,#BE09FF);-webkit-background-clip:text;background-clip:text;color:transparent;'>" + PRO_PRICE + "</span>"
+      + "<span style='font-size:15px;color:#F5F0F277;text-decoration:line-through;'>" + PRO_OLD + "</span>"
+      + "<span style='font-size:12px;font-weight:800;color:#0a0010;background:#FFD24a;padding:2px 8px;border-radius:6px;'>-70%</span>"
+      + "<span style='font-size:13px;color:#F5F0F2aa;'>\u00E0 vie \u00B7 paiement unique</span>";
+    return p;
+  }
+  var PRO_BENEFITS = [
+    ["\uD83C\uDFA8", "Tous les skins d\u00E9bloqu\u00E9s", "s\u00E9quenceur, notes, anneaux & pseudos"],
+    ["\u2728", "Outils IA en illimit\u00E9", "au lieu de 5 par jour"],
+    ["\uD83D\uDEAB", "Beaucoup moins de pub", "compose sans interruption"],
+    ["\uD83D\uDE80", "Publications boost\u00E9es", "mises en avant dans le flux"],
+    ["\uD83C\uDFBA", "Instruments premium", "Trompette, Perc & 808 d\u00E9bloqu\u00E9s"],
+    ["\uD83C\uDFA4", "Voix sans limite", "enregistre plus de 15 s + outils IA voix"],
+    ["\uD83D\uDCC1", "Sons perso", "tes propres fichiers dans Bruitages & Voix"]
+  ];
+  function benefitsList() {
+    var ul = document.createElement("div"); ul.style.cssText = "display:flex;flex-direction:column;gap:11px;margin:16px 0 18px;";
+    PRO_BENEFITS.forEach(function (b) {
+      var row = document.createElement("div"); row.style.cssText = "display:flex;align-items:flex-start;gap:11px;";
+      row.innerHTML = "<span style='font-size:18px;flex:none;width:24px;text-align:center;'>" + b[0] + "</span>"
+        + "<span style='display:flex;flex-direction:column;gap:1px;'><span style='font:700 14px Roboto;color:#F5F0F2;'>" + b[1] + "</span><span style='font-size:12px;color:#F5F0F299;'>" + b[2] + "</span></span>";
+      ul.appendChild(row);
+    });
+    return ul;
+  }
+  function ctaPro(label, after) {
+    var b = document.createElement("button");
+    b.style.cssText = "width:100%;padding:14px;border:none;border-radius:13px;background:linear-gradient(135deg,#FF7723,#BE09FF);color:#fff;font:800 15px Roboto;cursor:pointer;box-shadow:0 8px 24px #BE09FF55;";
+    b.textContent = label;
+    b.onclick = function () { startCheckout("pro", null, PRO_PRICE, function () { closeModals(); if (after) after(); }); };
+    return b;
+  }
+
+  function openProModal() {
+    closeModals();
+    var o = overlay(), c = card(470); c.style.position = "relative"; c.appendChild(xBtn(o));
+    c.appendChild(proBadgeRow());
+    var h = document.createElement("div"); h.style.cssText = "font:800 20px Roboto;color:#F5F0F2;margin-bottom:8px;"; h.textContent = "Passe \u00E0 la vitesse sup\u00E9rieure"; c.appendChild(h);
+    c.appendChild(priceRow());
+    c.appendChild(benefitsList());
+    c.appendChild(ctaPro("Passer \u00E0 Pro \u2014 " + PRO_PRICE));
+    var sub = document.createElement("div"); sub.style.cssText = "text-align:center;font-size:11px;color:#F5F0F266;margin-top:10px;"; sub.textContent = "Paiement unique, sans abonnement. Satisfait ou rembours\u00E9 14 jours."; c.appendChild(sub);
+    o.appendChild(c); document.body.appendChild(o);
+  }
+  window.__ekiOpenPro = openProModal;
+
+  function openLimitModal() {
+    closeModals();
+    var o = overlay(), c = card(430); c.style.position = "relative"; c.appendChild(xBtn(o));
+    var ic = document.createElement("div"); ic.style.cssText = "font-size:38px;text-align:center;margin-bottom:6px;"; ic.textContent = "\u26A1"; c.appendChild(ic);
+    var h = document.createElement("div"); h.style.cssText = "font:800 19px Roboto;color:#F5F0F2;text-align:center;margin-bottom:7px;"; h.textContent = "Limite IA atteinte"; c.appendChild(h);
+    var p = document.createElement("div"); p.style.cssText = "font-size:14px;color:#F5F0F2aa;text-align:center;line-height:1.55;margin-bottom:16px;"; p.innerHTML = "Tu as utilis\u00E9 tes <b style='color:#FF7723'>" + AI_LIMIT + " cr\u00E9dits IA</b> du jour.<br>Passe \u00E0 EkiLoop Pro pour des outils IA <b style='color:#BE09FF'>en illimit\u00E9</b> \u2728"; c.appendChild(p);
+    c.appendChild(ctaPro("D\u00E9bloquer l'illimit\u00E9 \u2014 " + PRO_PRICE));
+    var later = document.createElement("button"); later.style.cssText = "width:100%;margin-top:9px;padding:11px;border:1px solid #3A1A42;border-radius:11px;background:transparent;color:#F5F0F299;font:600 13px Roboto;cursor:pointer;"; later.textContent = "Revenir demain"; later.onclick = function () { o.remove(); }; c.appendChild(later);
+    o.appendChild(c); document.body.appendChild(o);
+  }
+  window.__ekiOpenLimit = openLimitModal;
+
+  // pop-up au clic sur « Acheter » d'un skin : skin seul OU Pro (tout offert)
+  function openSkinBuyModal(kind, id, name, price, refresh) {
+    closeModals();
+    var o = overlay(), c = card(500); c.style.position = "relative"; c.appendChild(xBtn(o));
+    var h = document.createElement("div"); h.style.cssText = "font:800 18px Roboto;color:#F5F0F2;margin-bottom:3px;"; h.textContent = "D\u00E9bloquer \u00AB " + (name || "ce skin") + " \u00BB"; c.appendChild(h);
+    var sh = document.createElement("div"); sh.style.cssText = "font-size:13px;color:#F5F0F288;margin-bottom:16px;"; sh.textContent = "Deux fa\u00E7ons de l'obtenir :"; c.appendChild(sh);
+
+    var opt1 = document.createElement("button");
+    opt1.style.cssText = "width:100%;text-align:left;padding:15px;border:1px solid #3A1A42;border-radius:14px;background:#1e0030;color:#F5F0F2;cursor:pointer;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;gap:12px;";
+    opt1.innerHTML = "<span style='display:flex;flex-direction:column;gap:2px;'><span style='font:700 14px Roboto;'>Acheter ce skin</span><span style='font-size:12px;color:#F5F0F299;'>d\u00E9bloque uniquement ce skin</span></span><span style='font:800 17px Roboto;color:#FF7723;white-space:nowrap;'>" + eur(price) + "</span>";
+    opt1.onclick = function () { startCheckout(kind, id, price, function () { closeModals(); if (refresh) refresh(); }); };
+    c.appendChild(opt1);
+
+    var opt2 = document.createElement("button");
+    opt2.style.cssText = "width:100%;text-align:left;padding:16px;border:2px solid #BE09FF;border-radius:14px;background:linear-gradient(135deg,#FF772318,#BE09FF22);color:#F5F0F2;cursor:pointer;position:relative;";
+    opt2.innerHTML = "<span style='position:absolute;top:-10px;left:14px;font:800 10px Roboto;letter-spacing:.5px;color:#0a0010;background:#FFD24a;padding:2px 8px;border-radius:6px;'>MEILLEUR CHOIX</span>"
+      + "<div style='display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:2px;'><span style='display:flex;flex-direction:column;gap:2px;'><span style='font:800 15px Roboto;'>\u2728 EkiLoop Pro</span><span style='font-size:12px;color:#F5F0F2bb;'>ce skin + <b>tous les autres</b> offerts, IA illimit\u00E9e, moins de pub, instruments premium\u2026</span></span><span style='display:flex;flex-direction:column;align-items:flex-end;'><span style='font:800 18px Roboto;color:#BE09FF;white-space:nowrap;'>" + PRO_PRICE + "</span><span style='font-size:11px;color:#F5F0F277;text-decoration:line-through;'>" + PRO_OLD + "</span></span></div>";
+    opt2.onclick = function () { startCheckout("pro", null, PRO_PRICE, function () { closeModals(); if (refresh) refresh(); }); };
+    c.appendChild(opt2);
+
+    var more = document.createElement("button"); more.style.cssText = "display:block;margin:13px auto 0;background:transparent;border:none;color:#BE09FF;font:600 12px Roboto;cursor:pointer;text-decoration:underline;"; more.textContent = "Voir tous les avantages Pro"; more.onclick = function () { openProModal(); }; c.appendChild(more);
+    o.appendChild(c); document.body.appendChild(o);
+  }
+  window.__ekiSkinBuyModal = openSkinBuyModal;
+
+  // ---- gros bouton « Obtenir Pro » en haut de l'\u00E9cran ----
+  function mkProCta() {
+    var b = document.createElement("button"); b.id = "__eki_probtn"; b.setAttribute("data-kind", "cta");
+    var compact = window.innerWidth < 900;
+    b.style.cssText = "position:fixed;top:76px;left:50%;transform:translateX(-50%);z-index:28;display:inline-flex;align-items:center;gap:8px;padding:8px 16px;border:none;border-radius:999px;background:linear-gradient(135deg,#FF7723,#BE09FF);color:#fff;font:800 13px Roboto;cursor:pointer;box-shadow:0 6px 22px #BE09FF66,0 0 0 1px #ffffff22;white-space:nowrap;animation:ekiProPulse 2.6s ease-in-out infinite;";
+    b.innerHTML = compact
+      ? "\u2728 EkiLoop Pro \u00B7 <b>" + PRO_PRICE + "</b>"
+      : "\u2728 Obtenir EkiLoop Pro \u00E0 vie \u00B7 <span style='text-decoration:line-through;opacity:.7;font-weight:600;'>" + PRO_OLD + "</span> <b>" + PRO_PRICE + "</b> <span style='background:#FFD24a;color:#0a0010;padding:1px 6px;border-radius:5px;font-size:11px;'>-70%</span>";
+    b.onclick = function () { openProModal(); };
+    return b;
+  }
+  function mkProBadge() {
+    var b = document.createElement("button"); b.id = "__eki_probtn"; b.setAttribute("data-kind", "badge");
+    b.style.cssText = "position:fixed;top:76px;left:50%;transform:translateX(-50%);z-index:28;display:inline-flex;align-items:center;gap:6px;padding:5px 13px;border:1px solid #BE09FF66;border-radius:999px;background:#BE09FF1f;color:#F5F0F2;font:800 12px Roboto;letter-spacing:.5px;cursor:default;";
+    b.innerHTML = "\u2728 MEMBRE PRO";
+    return b;
+  }
+  function placeProButton() {
+    var c = window.__ekiComponent, inStudio = c && c.state && c.state.screen === "studio";
+    var ex = document.getElementById("__eki_probtn");
+    if (!inStudio) { if (ex) ex.remove(); return; }
+    var pro = isPro(), wantKind = pro ? "badge" : "cta";
+    if (ex && ex.getAttribute("data-kind") !== wantKind) { ex.remove(); ex = null; }
+    if (!pro && window.innerWidth < 540) { if (ex) ex.remove(); return; }
+    if (!ex) { document.body.appendChild(pro ? mkProBadge() : mkProCta()); }
+  }
+  window.__ekiPlaceProButton = placeProButton;
+
+  // incitation douce, une fois par session
+  function proNudge() {
+    if (isPro()) return;
+    try {
+      if (sessionStorage.getItem(NUDGE_KEY)) return;
+      var c = window.__ekiComponent; if (!c || !c.state || c.state.screen !== "studio") return;
+      if (aiUsed() >= 3) { sessionStorage.setItem(NUDGE_KEY, "1"); if (typeof toast === "function") toast("\u2728 Astuce : EkiLoop Pro = IA illimit\u00E9e + tous les skins, " + PRO_PRICE + " \u00E0 vie"); }
+    } catch (e) {}
+  }
+  window.__ekiProNudge = proNudge;
+
+  // garde-fou instruments premium (appel\u00E9 depuis le menu instrument)
+  function instrLocked(id) { return !isPro() && ["trompette", "perc", "808"].indexOf(id) >= 0; }
+  window.__ekiInstrLocked = instrLocked;
+
+  (function ensureProCss() {
+    if (document.getElementById("__eki_pro_css")) return;
+    var st = document.createElement("style"); st.id = "__eki_pro_css";
+    st.textContent = "@keyframes ekiProPulse{0%,100%{box-shadow:0 6px 22px #BE09FF66,0 0 0 1px #ffffff22}50%{box-shadow:0 6px 30px #BE09FFaa,0 0 0 1px #ffffff33}}#__eki_probtn:hover{filter:brightness(1.07)}";
+    document.head.appendChild(st);
+  })();
 
   // ---------- boot ----------
   var _obsTimer = null;
