@@ -389,6 +389,17 @@ document.addEventListener('DOMContentLoaded', async function() {
       card.appendChild(adminBtn);
     }
 
+    if (window.__ekiIsPro && window.__ekiIsPro()) {
+      var sepC = document.createElement("div"); sepC.style.cssText = "height:1px;background:" + C.line + ";margin:18px 0;"; card.appendChild(sepC);
+      var classicBtn = mkBtn("\u2728 Revenir \u00e0 EkiLoop classique (quitter Pro)", "ghost");
+      classicBtn.onclick = function () {
+        if (window.__ekiSetPro) window.__ekiSetPro(false);
+        try { toast("Tu es repass\u00e9 sur EkiLoop classique"); } catch (e) {}
+        var pp = document.getElementById("__eki_profilepage"); if (pp) pp.remove(); openProfile();
+      };
+      card.appendChild(classicBtn);
+    }
+
     var em = document.createElement("div"); em.style.cssText = "font-size:12px;color:" + C.sub + ";margin-bottom:14px;text-align:center;word-break:break-all;"; em.textContent = u.email || ""; card.appendChild(em);
 
     card.appendChild(fieldLabel("Ma description (publique)"));
