@@ -456,6 +456,18 @@ document.addEventListener('DOMContentLoaded', async function() {
   }
   function openAdmin() {
     var card = modalShell("Espace admin \u2014 comptes", 560);
+    var proBox = document.createElement("div");
+    proBox.style.cssText = "display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px;margin-bottom:14px;border:1px solid " + C.line + ";border-radius:11px;background:" + C.bg2 + ";";
+    var proTxt = document.createElement("div"); proTxt.style.cssText = "font-size:13px;color:" + C.txt + ";line-height:1.4;";
+    var proBtn = mkBtn("", "secondary"); proBtn.style.width = "auto"; proBtn.style.margin = "0"; proBtn.style.padding = "9px 14px"; proBtn.style.whiteSpace = "nowrap"; proBtn.style.flex = "none";
+    function syncPro() {
+      var on = !!(window.__ekiIsPro && window.__ekiIsPro());
+      proTxt.innerHTML = "Forfait Pro : <b style='color:" + (on ? "#22C55E" : C.sub) + ";'>" + (on ? "ACTIV\u00c9 \u2728" : "d\u00e9sactiv\u00e9") + "</b><br><span style='font-size:11px;color:" + C.sub + ";'>" + (on ? "Tu vois la version payante (sans pub)." : "Tu vois la version gratuite (avec pubs).") + "</span>";
+      proBtn.textContent = on ? "Quitter Pro (tester gratuit)" : "Repasser en Pro";
+    }
+    proBtn.onclick = function () { var on = !!(window.__ekiIsPro && window.__ekiIsPro()); if (window.__ekiSetPro) window.__ekiSetPro(!on); syncPro(); try { toast(!on ? "\u2728 Mode Pro activ\u00e9" : "Mode gratuit \u2014 pubs visibles"); } catch (e) {} };
+    syncPro();
+    proBox.appendChild(proTxt); proBox.appendChild(proBtn); card.appendChild(proBox);
     var info = document.createElement("div"); info.style.cssText = "font-size:12px;color:" + C.sub + ";margin-bottom:12px;"; info.textContent = "Chargement\u2026"; card.appendChild(info);
     var wrap = document.createElement("div"); card.appendChild(wrap);
     if (!configured()) { info.textContent = "Disponible uniquement avec Supabase configuré."; return; }
@@ -1050,7 +1062,7 @@ document.addEventListener('DOMContentLoaded', async function() {
   }
 
   // ---- boot communauté ----
-  function commTick() { try { ensureMobileCSS(); tagMobileTargets(); tagToolbarButtons(); placeHeaderButtons(); placeProjectsButton(); placeCoinShop(); placeAiMenu(); placeBurger(); placeMessagesBtn(); placePremiumTracks(); if (typeof placeSidebar === "function") placeSidebar(); if (typeof wireSmoothResize === "function") wireSmoothResize(); if (typeof placeSeqUI === "function") placeSeqUI(); if (typeof reorganizeHeader === "function") reorganizeHeader(); if (typeof hideTopProjets === "function") hideTopProjets(); if (typeof applyCosmetics === "function") applyCosmetics(); wireParamsGear(); attachInstrumentGuard(); attachGridWheelFix(); ensureHScroll(); scheduleResponsive(); wireResponsiveResize(); tagDnD(); studioTimerCheck(); suppressAppTutorial(); tickerEnsure(); tutorialEnsure(); applySkins(); if (typeof placeProButton === "function") placeProButton(); if (typeof proNudge === "function") proNudge(); if (window.__ekiVoicePatchTick) window.__ekiVoicePatchTick(); if (window.__ekiVoixTick) window.__ekiVoixTick(); } catch (e) {} }
+  function commTick() { try { ensureMobileCSS(); tagMobileTargets(); tagToolbarButtons(); placeHeaderButtons(); placeProjectsButton(); placeCoinShop(); placeAiMenu(); placeBurger(); placeMessagesBtn(); placePremiumTracks(); if (typeof placeSidebar === "function") placeSidebar(); if (typeof wireSmoothResize === "function") wireSmoothResize(); if (typeof placeSeqUI === "function") placeSeqUI(); if (typeof reorganizeHeader === "function") reorganizeHeader(); if (typeof hideTopProjets === "function") hideTopProjets(); if (typeof applyCosmetics === "function") applyCosmetics(); wireParamsGear(); attachInstrumentGuard(); attachGridWheelFix(); ensureHScroll(); scheduleResponsive(); wireResponsiveResize(); tagDnD(); studioTimerCheck(); suppressAppTutorial(); tickerEnsure(); tutorialEnsure(); applySkins(); if (typeof placeProButton === "function") placeProButton(); if (typeof proNudge === "function") proNudge(); if (window.__ekiVoicePatchTick) window.__ekiVoicePatchTick(); if (window.__ekiVoixTick) window.__ekiVoixTick(); if (window.__ekiAdTick) window.__ekiAdTick(); } catch (e) {} }
   function commBoot() {
     initDnD();
     try { var mo = new MutationObserver(function () { clearTimeout(window.__ekiCommT); window.__ekiCommT = setTimeout(commTick, 180); }); mo.observe(document.body, { childList: true, subtree: true }); } catch (e) {}
@@ -4000,13 +4012,23 @@ document.addEventListener('DOMContentLoaded', async function() {
   }
 
   function laneRow(c, t, idx, total) {
-    var cols = t.steps[0].length, meta = c.voiceMeta && c.voiceMeta[t.id], cl = clipOf(t), rec = _isRec(c, t.id), isCur = (c.state.currentTrackId === t.id);
+    var cols = t.steps[0].length, stepsTotal = t.stepCount || t.steps[0].length, meta = c.voiceMeta && c.voiceMeta[t.id], cl = clipOf(t), rec = _isRec(c, t.id), isCur = (c.state.currentTrackId === t.id);
     var row = document.createElement("div");
     row.style.cssText = "display:flex;align-items:center;gap:10px;height:46px;flex:none;border-bottom:1px solid #ffffff0d;";
     var head = document.createElement("div");
-    head.style.cssText = "width:120px;flex:none;display:flex;flex-direction:column;gap:3px;cursor:pointer;";
-    head.onclick = function () { if (c.setState) c.setState({ currentTrackId: t.id }); };
-    head.innerHTML = "<span style='font:700 12px Roboto;color:" + (isCur ? "#BE09FF" : "#F5F0F2") + ";'>\uD83C\uDFA4 Voix " + (idx + 1) + (isCur ? " \u25CF" : "") + "</span><span style='font-size:10px;color:#F5F0F277;'>" + (meta ? (meta.dur ? meta.dur.toFixed(1) + "s" : "prise") : "vide") + "</span>";
+    head.style.cssText = "width:120px;flex:none;display:flex;align-items:center;gap:6px;";
+    var lblBox = document.createElement("div");
+    lblBox.style.cssText = "flex:1;min-width:0;display:flex;flex-direction:column;gap:3px;cursor:pointer;";
+    lblBox.onclick = function () { if (c.setState) c.setState({ currentTrackId: t.id }); };
+    lblBox.innerHTML = "<span style='font:700 12px Roboto;color:" + (isCur ? "#BE09FF" : "#F5F0F2") + ";white-space:nowrap;'>\uD83C\uDFA4 Voix " + (idx + 1) + (isCur ? " \u25CF" : "") + "</span><span style='font-size:10px;color:#F5F0F277;'>" + (meta ? (meta.dur ? meta.dur.toFixed(1) + "s" : "prise") : "vide") + "</span>";
+    head.appendChild(lblBox);
+    var del = document.createElement("button");
+    del.textContent = "\uD83D\uDDD1"; del.title = "Supprimer cette voix";
+    del.style.cssText = "width:26px;height:26px;flex:none;border:none;border-radius:7px;background:transparent;color:#F5F0F266;font-size:14px;cursor:pointer;";
+    del.onmouseenter = function () { del.style.background = "#e0245e33"; del.style.color = "#e0245e"; };
+    del.onmouseleave = function () { del.style.background = "transparent"; del.style.color = "#F5F0F266"; };
+    del.onclick = function (e) { e.stopPropagation(); var id = t.id; if (c.removeTrack) c.removeTrack(id); setTimeout(function () { var lanes = _voixLanes(c); var cur = c.currentTrack && c.currentTrack(); if (lanes.length && (!cur || cur.instrument !== "voix")) c.setState({ currentTrackId: lanes[0].id }); }, 50); };
+    head.appendChild(del);
     row.appendChild(head);
     // record + import
     var recB = document.createElement("button");
@@ -4027,7 +4049,7 @@ document.addEventListener('DOMContentLoaded', async function() {
       var live = document.createElement("div"); live.style.cssText = "position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#e0245e;font:700 12px Roboto;"; live.textContent = "\u25CF enr. " + Math.round(c.state.recordSecs || 0) + "s"; tl.appendChild(live);
     } else if (cl && meta) {
       var bar = document.createElement("div");
-      var leftPct = (cl.start / cols) * 100, wPct = (cl.len / cols) * 100;
+      var leftPct = (cl.start / stepsTotal) * 100, wPct = (cl.len / stepsTotal) * 100;
       bar.style.cssText = "position:absolute;top:3px;bottom:3px;left:" + leftPct + "%;width:" + wPct + "%;background:linear-gradient(90deg,#FF7723,#BE09FF);border-radius:6px;cursor:default;display:flex;align-items:center;padding:0 8px;box-sizing:border-box;min-width:14px;";
       bar.innerHTML = "<span style='font-size:9px;color:#fff;font-weight:700;white-space:nowrap;overflow:hidden;'>\uD83C\uDFB5</span>";
       var grip = document.createElement("div");
@@ -4035,8 +4057,8 @@ document.addEventListener('DOMContentLoaded', async function() {
       grip.title = "Glisse pour \u00E9largir / r\u00E9duire l'audio";
       grip.onmousedown = function (e) {
         e.preventDefault(); e.stopPropagation();
-        var rect = tl.getBoundingClientRect(), stepW = rect.width / cols, startX = e.clientX, startLen = cl.len, liveLen = startLen;
-        function mv(ev) { var d = Math.round((ev.clientX - startX) / stepW); liveLen = Math.max(1, Math.min(cols - cl.start, startLen + d)); bar.style.width = (liveLen / cols * 100) + "%"; }
+        var rect = tl.getBoundingClientRect(), stepW = rect.width / stepsTotal, startX = e.clientX, startLen = cl.len, liveLen = startLen;
+        function mv(ev) { var d = Math.round((ev.clientX - startX) / stepW); liveLen = Math.max(1, Math.min(stepsTotal - cl.start, startLen + d)); bar.style.width = (liveLen / stepsTotal * 100) + "%"; }
         function up() { document.removeEventListener("mousemove", mv); document.removeEventListener("mouseup", up); if (liveLen !== startLen) setClip(c, t.id, liveLen, cl.start); }
         document.addEventListener("mousemove", mv); document.addEventListener("mouseup", up);
       };
@@ -4044,6 +4066,9 @@ document.addEventListener('DOMContentLoaded', async function() {
     } else {
       var empty = document.createElement("div"); empty.style.cssText = "position:absolute;inset:0;display:flex;align-items:center;padding-left:10px;color:#F5F0F255;font-size:11px;"; empty.textContent = "vide \u2014 enregistre ou importe"; tl.appendChild(empty);
     }
+    var ph = document.createElement("div"); ph.className = "__eki_voix_ph"; ph.setAttribute("data-total", stepsTotal);
+    ph.style.cssText = "position:absolute;top:0;bottom:0;left:0;width:2px;background:linear-gradient(180deg,#FF7723,#BE09FF);box-shadow:0 0 8px #FF7723,0 0 14px #BE09FF88;opacity:0;pointer-events:none;z-index:6;";
+    tl.appendChild(ph);
     row.appendChild(tl);
     return row;
   }
@@ -4114,6 +4139,97 @@ document.addEventListener('DOMContentLoaded', async function() {
     }
   }
   window.__ekiVoixTick = voixTick;
+
+  function voixPhLoop() {
+    try {
+      var pane = document.getElementById("__eki_voix_pane"), c = window.__ekiComponent;
+      var phs = pane ? pane.querySelectorAll(".__eki_voix_ph") : [];
+      var playing = !!(pane && c && c.state && c.state.isPlaying && typeof c._lastStep === "number" && c._lastStep >= 0);
+      for (var i = 0; i < phs.length; i++) {
+        if (playing) {
+          var total = parseInt(phs[i].getAttribute("data-total"), 10) || 16;
+          var step = ((c._lastStep % total) + total) % total, prev = phs[i]._ekiPrev;
+          phs[i].style.transition = (prev != null && step < prev) ? "none" : "left .09s linear";
+          phs[i]._ekiPrev = step;
+          phs[i].style.left = ((step / total) * 100) + "%";
+          phs[i].style.opacity = "1";
+        } else { phs[i].style.opacity = "0"; phs[i]._ekiPrev = null; }
+      }
+    } catch (e) {}
+    requestAnimationFrame(voixPhLoop);
+  }
+  if (!window.__ekiVoixPhStarted) { window.__ekiVoixPhStarted = true; requestAnimationFrame(voixPhLoop); }
+
+  // ============ comm18 : publicit\u00e9s pour les comptes non-Pro ============
+  // Pour brancher un VRAI r\u00e9seau (ex. Google AdSense) : d\u00e9finis avant le chargement
+  //   window.__ekiAdProvider = function(box){ box.innerHTML = '<ins class="adsbygoogle" data-ad-client="ca-pub-XXX" data-ad-slot="123"></ins>'; (adsbygoogle=window.adsbygoogle||[]).push({}); };
+  // (et ajoute le <script> AdSense dans la page). Sans \u00e7a, des pubs maison (promo Pro) s'affichent.
+  function _adC() { var c = window.__ekiComponent; return (c && c.state) ? c : null; }
+  function _adIsPro() { return !!(window.__ekiIsPro && window.__ekiIsPro()); }
+
+  var AD_CREATIVES = [
+    { ico: "\u2728", t: "Passe en EkiLoop Pro", s: "IA illimit\u00e9e \u00b7 tous les skins \u00b7 z\u00e9ro pub", c1: "#FF7723", c2: "#BE09FF" },
+    { ico: "\uD83C\uDFB9", t: "D\u00e9bloque les instruments Pro", s: "Trompette, 808, percussions\u2026", c1: "#0EA5E9", c2: "#6366F1" },
+    { ico: "\uD83C\uDFA4", t: "Voix sans limite", s: "Enregistre + de 15 s et importe tes fichiers", c1: "#EC4899", c2: "#8B5CF6" },
+    { ico: "\uD83D\uDD13", t: "Enl\u00e8ve les pubs", s: "EkiLoop Pro \u00e0 vie \u2014 16,99\u20ac 4,99\u20ac", c1: "#22C55E", c2: "#0EA5E9" }
+  ];
+  var _adIdx = 0;
+
+  function paintCreative(box) {
+    if (typeof window.__ekiAdProvider === "function") { try { box.innerHTML = ""; window.__ekiAdProvider(box); return; } catch (e) {} }
+    var a = AD_CREATIVES[_adIdx % AD_CREATIVES.length];
+    box.innerHTML = "";
+    box.style.cursor = "pointer";
+    var chip = document.createElement("div");
+    chip.style.cssText = "width:38px;height:38px;flex:none;border-radius:10px;background:linear-gradient(135deg," + a.c1 + "," + a.c2 + ");display:flex;align-items:center;justify-content:center;font-size:20px;";
+    chip.textContent = a.ico;
+    var txt = document.createElement("div");
+    txt.style.cssText = "min-width:0;display:flex;flex-direction:column;gap:1px;line-height:1.15;";
+    txt.innerHTML = "<span style='font:800 13px Roboto;color:#F5F0F2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;'>" + a.t + "</span><span style='font-size:11px;color:#F5F0F2aa;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;'>" + a.s + "</span>";
+    box.appendChild(chip); box.appendChild(txt);
+    box.onclick = function () { if (window.__ekiOpenPro) window.__ekiOpenPro(); };
+  }
+
+  function buildAdBanner() {
+    var outer = document.createElement("div");
+    outer.id = "__eki_ad";
+    outer.style.cssText = "position:fixed;left:0;right:0;bottom:0;display:flex;justify-content:center;z-index:22;pointer-events:none;";
+    var inner = document.createElement("div");
+    inner.style.cssText = "pointer-events:auto;margin:0 10px 9px;width:100%;max-width:720px;height:58px;display:flex;align-items:center;gap:11px;padding:0 10px 0 0;background:#15011fF2;border:1px solid #BE09FF44;border-radius:13px;box-shadow:0 8px 26px #0009;overflow:hidden;";
+    var tag = document.createElement("div");
+    tag.style.cssText = "flex:none;align-self:stretch;display:flex;align-items:center;padding:0 9px;background:#ffffff0d;color:#F5F0F266;font:700 9px Roboto;letter-spacing:1px;writing-mode:vertical-rl;transform:rotate(180deg);";
+    tag.textContent = "PUBLICIT\u00c9";
+    var creative = document.createElement("div");
+    creative.id = "__eki_ad_creative";
+    creative.style.cssText = "flex:1;min-width:0;display:flex;align-items:center;gap:10px;";
+    var prem = document.createElement("button");
+    prem.style.cssText = "flex:none;padding:8px 13px;border:none;border-radius:10px;background:linear-gradient(135deg,#FF7723,#BE09FF);color:#fff;font:800 12px Roboto;cursor:pointer;white-space:nowrap;";
+    prem.textContent = "\u2728 Sans pub";
+    prem.onclick = function (e) { e.stopPropagation(); if (window.__ekiOpenPro) window.__ekiOpenPro(); };
+    var close = document.createElement("button");
+    close.title = "Retirer les pubs avec EkiLoop Pro";
+    close.style.cssText = "flex:none;width:26px;height:26px;border:none;border-radius:7px;background:transparent;color:#F5F0F255;font-size:15px;cursor:pointer;";
+    close.textContent = "\u2715";
+    close.onmouseenter = function () { close.style.background = "#ffffff14"; close.style.color = "#F5F0F2"; };
+    close.onmouseleave = function () { close.style.background = "transparent"; close.style.color = "#F5F0F255"; };
+    close.onclick = function (e) { e.stopPropagation(); if (window.__ekiOpenPro) window.__ekiOpenPro(); };
+    inner.appendChild(tag); inner.appendChild(creative); inner.appendChild(prem); inner.appendChild(close);
+    outer.appendChild(inner);
+    paintCreative(creative);
+    if (!window.__ekiAdRot) { window.__ekiAdRot = setInterval(function () { _adIdx++; var cv = document.getElementById("__eki_ad_creative"); var bn = document.getElementById("__eki_ad"); if (cv && bn && bn.style.display !== "none") paintCreative(cv); }, 11000); }
+    return outer;
+  }
+
+  function adTick() {
+    var c = _adC();
+    var sc = c ? c.state.screen : null;
+    var show = !!c && !_adIsPro() && (sc === "studio" || sc === "home");
+    var b = document.getElementById("__eki_ad");
+    if (!show) { if (b) b.style.display = "none"; return; }
+    if (!b) { b = buildAdBanner(); document.body.appendChild(b); }
+    if (b.style.display === "none") { b.style.display = "flex"; var cv = document.getElementById("__eki_ad_creative"); if (cv) paintCreative(cv); }
+  }
+  window.__ekiAdTick = adTick;
 
   // ---------- boot ----------
   var _obsTimer = null;
