@@ -4224,11 +4224,11 @@ document.addEventListener('DOMContentLoaded', async function() {
     box.innerHTML = "";
     box.style.cursor = "pointer";
     var chip = document.createElement("div");
-    chip.style.cssText = "width:38px;height:38px;flex:none;border-radius:10px;background:linear-gradient(135deg," + a.c1 + "," + a.c2 + ");display:flex;align-items:center;justify-content:center;font-size:20px;";
+    chip.style.cssText = "width:28px;height:28px;flex:none;margin-left:5px;border-radius:8px;background:linear-gradient(135deg," + a.c1 + "," + a.c2 + ");display:flex;align-items:center;justify-content:center;font-size:15px;";
     chip.textContent = a.ico;
     var txt = document.createElement("div");
-    txt.style.cssText = "min-width:0;display:flex;flex-direction:column;gap:1px;line-height:1.15;";
-    txt.innerHTML = "<span style='font:800 13px Roboto;color:#F5F0F2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;'>" + a.t + "</span><span style='font-size:11px;color:#F5F0F2aa;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;'>" + a.s + "</span>";
+    txt.style.cssText = "min-width:0;display:flex;flex-direction:column;gap:0;line-height:1.12;";
+    txt.innerHTML = "<span style='font:800 12px Roboto;color:#F5F0F2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;'>" + a.t + "</span><span style='font-size:10px;color:#F5F0F2aa;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;'>" + a.s + "</span>";
     box.appendChild(chip); box.appendChild(txt);
     box.onclick = function () { if (window.__ekiOpenPro) window.__ekiOpenPro(); };
   }
@@ -4236,22 +4236,22 @@ document.addEventListener('DOMContentLoaded', async function() {
   function buildAdBanner() {
     var outer = document.createElement("div");
     outer.id = "__eki_ad";
-    outer.style.cssText = "position:fixed;left:0;right:0;bottom:0;display:flex;justify-content:center;z-index:22;pointer-events:none;";
+    outer.style.cssText = "position:fixed;left:0;right:0;bottom:78px;display:flex;justify-content:center;z-index:22;pointer-events:none;";
     var inner = document.createElement("div");
-    inner.style.cssText = "pointer-events:auto;margin:0 10px 9px;width:100%;max-width:720px;height:58px;display:flex;align-items:center;gap:11px;padding:0 10px 0 0;background:#15011fF2;border:1px solid #BE09FF44;border-radius:13px;box-shadow:0 8px 26px #0009;overflow:hidden;";
+    inner.style.cssText = "pointer-events:auto;margin:0 10px;width:auto;max-width:460px;height:42px;display:flex;align-items:center;gap:7px;padding:0 7px 0 0;background:#15011fF7;border:1px solid #BE09FF66;border-radius:11px;box-shadow:0 6px 22px #000b;overflow:hidden;";
     var tag = document.createElement("div");
-    tag.style.cssText = "flex:none;align-self:stretch;display:flex;align-items:center;padding:0 9px;background:#ffffff0d;color:#F5F0F266;font:700 9px Roboto;letter-spacing:1px;writing-mode:vertical-rl;transform:rotate(180deg);";
-    tag.textContent = "PUBLICIT\u00c9";
+    tag.style.cssText = "flex:none;align-self:stretch;display:flex;align-items:center;padding:0 5px;background:#ffffff0d;color:#F5F0F255;font:700 8px Roboto;letter-spacing:.5px;writing-mode:vertical-rl;transform:rotate(180deg);";
+    tag.textContent = "PUB";
     var creative = document.createElement("div");
     creative.id = "__eki_ad_creative";
-    creative.style.cssText = "flex:1;min-width:0;display:flex;align-items:center;gap:10px;";
+    creative.style.cssText = "flex:1;min-width:0;display:flex;align-items:center;gap:7px;";
     var prem = document.createElement("button");
-    prem.style.cssText = "flex:none;padding:8px 13px;border:none;border-radius:10px;background:linear-gradient(135deg,#FF7723,#BE09FF);color:#fff;font:800 12px Roboto;cursor:pointer;white-space:nowrap;";
+    prem.style.cssText = "flex:none;padding:6px 10px;border:none;border-radius:8px;background:linear-gradient(135deg,#FF7723,#BE09FF);color:#fff;font:800 11px Roboto;cursor:pointer;white-space:nowrap;";
     prem.textContent = "\u2728 Sans pub";
     prem.onclick = function (e) { e.stopPropagation(); if (window.__ekiOpenPro) window.__ekiOpenPro(); };
     var close = document.createElement("button");
     close.title = "Retirer les pubs avec EkiLoop Pro";
-    close.style.cssText = "flex:none;width:26px;height:26px;border:none;border-radius:7px;background:transparent;color:#F5F0F255;font-size:15px;cursor:pointer;";
+    close.style.cssText = "flex:none;width:22px;height:22px;border:none;border-radius:6px;background:transparent;color:#F5F0F255;font-size:13px;cursor:pointer;";
     close.textContent = "\u2715";
     close.onmouseenter = function () { close.style.background = "#ffffff14"; close.style.color = "#F5F0F2"; };
     close.onmouseleave = function () { close.style.background = "transparent"; close.style.color = "#F5F0F255"; };
@@ -4271,6 +4271,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     var b = document.getElementById("__eki_ad");
     if (!show) { if (b) b.style.display = "none"; return; }
     if (!b) { b = buildAdBanner(); document.body.appendChild(b); }
+    try { var sb = document.getElementById("__eki_seqbar"); if (sb) { var rr = sb.getBoundingClientRect(); if (rr && rr.height) b.style.bottom = Math.max(12, (window.innerHeight - rr.top) + 8) + "px"; } else { b.style.bottom = "16px"; } } catch (e) {}
     if (b.style.display === "none") { b.style.display = "flex"; var cv = document.getElementById("__eki_ad_creative"); if (cv) paintCreative(cv); }
   }
   window.__ekiAdTick = adTick;
